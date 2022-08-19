@@ -7,7 +7,7 @@ from src.api.utils import authorization
 account = Blueprint('api', __name__)
 
 
-@account.post('/user')
+@account.post('/')
 def create_user_endpoint():
     response = create_user(request.get_json())
     return Response(
@@ -17,7 +17,7 @@ def create_user_endpoint():
     )
 
 
-@account.get('user/<username>')
+@account.get('/<string:username>')
 def get_user_endpoint(username):
     response = get_user(username)
     return Response(
@@ -26,7 +26,7 @@ def get_user_endpoint(username):
         content_type='application/json'
     )
 
-@account.put('/user')
+@account.put('/')
 @authorization
 def update_user_endpoint(token):
     print(token)
@@ -37,7 +37,7 @@ def update_user_endpoint(token):
         content_type='application/json'
     )
 
-@account.post('/user/login')
+@account.post('/login')
 def login_user_endpoint():
     response = login_user(request.get_json())
     print(response)
@@ -48,7 +48,7 @@ def login_user_endpoint():
     )
 
 
-@account.post('/user/logout')
+@account.post('/logout')
 @authorization
 def logout_user_endpoint(token):
     response = logout_user(token)

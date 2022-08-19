@@ -1,4 +1,5 @@
 from functools import wraps
+import logging
 from flask import request, json
 from src.models.blacklist import BlackList
 
@@ -30,7 +31,6 @@ def authorization(func):
         
         if token is None or token == '':
             raise ValueError('Token not transfered')
-
         if BlackList.get_by_token(token) is not None:
             return Response(json.dumps(
                 {

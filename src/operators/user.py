@@ -47,7 +47,6 @@ def update_user(data: Dict[str, str], token: str) -> Dict[str, Union[str, bool]]
         Исходящие данные:
         :params output_data: Словарь с результатами
     """
-    logging.debug(data)
 
     if data.get('password'):
         data['hash_password'] = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt())
@@ -55,7 +54,6 @@ def update_user(data: Dict[str, str], token: str) -> Dict[str, Union[str, bool]]
     serializer = CreateUpdateUserSchema()
     data = serializer.dump(data)
 
-    logging.debug(data)
 
     id = decode_jwt_token(token)
     if id is None:
@@ -63,12 +61,9 @@ def update_user(data: Dict[str, str], token: str) -> Dict[str, Union[str, bool]]
 
     user_to_update = User.get_by_id(id)
 
-    logging.debug(user_to_update)
-
     mapper = inspect(User)
     attrs = [column.key for column in mapper.attrs]
 
-    logging.debug(attrs)
 
     for attr, value in data.items():
         if attr in attrs:
