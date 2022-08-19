@@ -41,9 +41,3 @@ class Sponsor(BaseModel):
             )
         )
     )
-
-
-class SponsorSchema(BaseSchema):
-    id: uuid.UUID
-    game_id: uuid.UUID
-    company_id: uuid.UUID

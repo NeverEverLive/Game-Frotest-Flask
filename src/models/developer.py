@@ -41,9 +41,3 @@ class Developer(BaseModel):
             )
         )
     )
-
-
-class DeveloperSchema(BaseSchema):
-    id: uuid.UUID
-    game_id: uuid.UUID
-    company_id: uuid.UUID

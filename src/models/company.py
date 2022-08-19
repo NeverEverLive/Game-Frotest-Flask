@@ -26,9 +26,3 @@ class Company(BaseModel):
     __table_args__ = (
         PrimaryKeyConstraint(id),
     )
-
-
-class CompanySchema(BaseSchema):
-    id: uuid.UUID
-    name: str
-    description: Optional[str]

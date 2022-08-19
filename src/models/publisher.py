@@ -41,9 +41,3 @@ class Publisher(BaseModel):
             )
         )
     )
-
-
-class PublisherSchema(BaseSchema):
-    id: uuid.UUID
-    game_id: uuid.UUID
-    company_id: uuid.UUID

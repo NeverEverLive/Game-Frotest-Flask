@@ -24,9 +24,3 @@ class Genre(BaseModel):
     __table_args__ = (
         PrimaryKeyConstraint(id),
     )
-
-
-class GenreSchema(BaseSchema):
-    id: uuid.UUID
-    name: str
-    description: Optional[str]

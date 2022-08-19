@@ -25,10 +25,3 @@ class Image(BaseModel):
     __table_args__ = (
         PrimaryKeyConstraint(id),
     )
-
-
-class ImageSchema(BaseSchema):
-    id: uuid.UUID
-    file: str
-    name: str
-    mimetype: str

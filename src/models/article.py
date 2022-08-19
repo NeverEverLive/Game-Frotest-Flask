@@ -46,13 +46,3 @@ class Article(BaseModel):
             )
         )
     )
-
-
-class ArticleSchema(BaseSchema):
-    id: uuid.UUID
-    title: str
-    description: Optional[str]
-    date: datetime
-    is_published: bool = Field(default=False)
-    game_id: uuid.UUID
-    user_id: uuid.UUID
