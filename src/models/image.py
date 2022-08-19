@@ -6,7 +6,7 @@ from src.models.base_model import BaseModel
 from sqlalchemy import Column, func, PrimaryKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.types import String, DateTime
+from sqlalchemy.types import String, DateTime, Text
 from pydantic import BaseModel as BaseSchema
 
 
@@ -14,7 +14,7 @@ class Image(BaseModel):
     __tablename__ = 'image'
 
     id = Column(UUID(as_uuid=True), nullable=False, unique=True, default=uuid.uuid4())
-    file = Column(String, nullable=False)
+    file = Column(Text, nullable=False)
     name = Column(String, nullable=False) 
     mimetype = Column(String, nullable=False)
     inserted_at = Column(DateTime, nullable=False, server_default=func.now())

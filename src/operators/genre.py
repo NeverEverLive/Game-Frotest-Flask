@@ -15,6 +15,7 @@ def create_genre(genre: GenreSchema) -> ResponseSchema:
     with get_session() as session:
         session.add(genre_state)
         session.commit()
+        
         return ResponseSchema(
             data=GenreSchema.from_orm(genre_state),
             message="Genre created successfuly",
