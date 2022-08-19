@@ -3,16 +3,16 @@ import uuid
 from typing import Optional
 
 from pydantic import BaseModel, Field, validator
-from src.schema.accomplices import AccomplicesSchema
 
 
-class GameSchema(BaseModel):
+class ArticleSchema(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     title: str
     description: Optional[str]
-    date: datetime.date
-    image_id: uuid.UUID
-    genre_id: uuid.UUID
+    date: datetime.date = Field(default_factory=datetime.date.today)
+    is_published: bool = Field(default=False)
+    game_id: uuid.UUID
+    user_id: uuid.UUID
 
     def __hash__(self):
         return hash((
@@ -20,8 +20,9 @@ class GameSchema(BaseModel):
             self.title, 
             self.description, 
             self.date, 
-            self.image_id, 
-            self.genre_id
+            self.is_published, 
+            self.game_id, 
+            self.user_id
         ))
 
     @validator('date', pre=True)
@@ -34,19 +35,5 @@ class GameSchema(BaseModel):
         orm_mode = True
     
 
-class GetGameSchema(BaseModel):
+class GetArticleSchema(BaseModel):
     id: uuid.UUID
-
-
-
-class GameCompanyRelationSchema(BaseModel):
-    game: GameSchema
-    developer: AccomplicesSchema
-    publisher: Optional[AccomplicesSchema]
-    sponsor: Optional[AccomplicesSchema]
-
-    def __hash__(self):
-        return hash((self.game, self.developer, self.publisher, self.sponsor))
-
-    class Config:
-        orm_mode = True

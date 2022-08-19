@@ -7,9 +7,7 @@ from src.models.developer import Developer
 from src.models.publisher import Publisher
 from src.models.sponsor import Sponsor
 from src.schema.game import GameSchema, GetGameSchema, GameCompanyRelationSchema
-from src.schema.developer import DeveloperSchema
-from src.schema.publisher import PublisherSchema
-from src.schema.sponsor import SponsorSchema
+from src.schema.accomplices import AccomplicesSchema
 from src.schema.response import ResponseSchema
 
 
@@ -48,9 +46,9 @@ def _create_accomplices(data):
     if data.developer:
         _create_developer(data.game, data.developer)
     if data.publisher:
-        _create_publisher(data.game)
+        _create_publisher(data.game, data.publisher)
     if data.sponsor:
-        _create_sponsor(data.game)
+        _create_sponsor(data.game, data.publisher)
 
 
 def create_game(data: GameCompanyRelationSchema) -> ResponseSchema:
@@ -85,11 +83,11 @@ def get_game(game: GetGameSchema) -> ResponseSchema:
         publisher = None
         sponsor = None
         game=GameSchema.from_orm(game_state)
-        developer=DeveloperSchema.from_orm(developer_state)
+        developer=AccomplicesSchema.from_orm(developer_state)
         if publisher_state:
-            publisher=PublisherSchema.from_orm(publisher_state)
+            publisher=AccomplicesSchema.from_orm(publisher_state)
         if sponsor_state:
-            sponsor=SponsorSchema.from_orm(sponsor_state)
+            sponsor=AccomplicesSchema.from_orm(sponsor_state)
 
         data = {
             "game": game,

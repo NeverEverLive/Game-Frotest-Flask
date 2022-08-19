@@ -4,7 +4,7 @@ import uuid
 from pydantic import BaseModel, Field
 
 
-class PublisherSchema(BaseModel):
+class AccomplicesSchema(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     company_id: uuid.UUID
     game_id: Optional[uuid.UUID]

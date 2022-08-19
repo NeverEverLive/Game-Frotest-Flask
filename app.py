@@ -8,6 +8,7 @@ from src.api.genre import genre
 from src.api.company import company
 from src.api.image import image
 from src.api.game import game
+from src.api.article import article
 from settings import app_config
 
 
@@ -27,6 +28,7 @@ def create_app():
     app.register_blueprint(company, url_prefix='/api/company')
     app.register_blueprint(image, url_prefix='/api/image')
     app.register_blueprint(game, url_prefix='/api/game')
+    app.register_blueprint(article, url_prefix='/api/article')
 
     # @app.errorhandler(NotFound)
     # def handle_not_found_exception(error):

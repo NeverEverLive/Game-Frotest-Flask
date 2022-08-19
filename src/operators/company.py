@@ -1,6 +1,5 @@
-
-
 import logging
+
 from src.models.base_model import get_session
 from src.models.company import Company
 from src.schema.company import CompanySchema, GetCompanySchema
