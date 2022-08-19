@@ -1,10 +1,13 @@
 from flask import Flask, Response, json
-from settings import app_config
-import src.models
 from flask_cors import CORS
+
+import src.models
+from src.utils.json_encoder import CustomJSONEncoder
 from src.api.account import account
 from src.api.genre import genre
-from src.utils.json_encoder import CustomJSONEncoder
+from src.api.company import company
+from settings import app_config
+
 
 cors = CORS()
 
@@ -19,6 +22,7 @@ def create_app():
 
     app.register_blueprint(account, url_prefix='/api/account')
     app.register_blueprint(genre, url_prefix='/api/genre')
+    app.register_blueprint(company, url_prefix='/api/company')
 
     # @app.errorhandler(NotFound)
     # def handle_not_found_exception(error):

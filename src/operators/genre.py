@@ -40,14 +40,14 @@ def get_genre(genre: GetGenreSchema) -> ResponseSchema:
 
 def update_genre(genre: GenreSchema) -> ResponseSchema:
 
-    user_state = Genre().fill(**genre.dict())
+    genre_state = Genre().fill(**genre.dict())
 
     with get_session() as session:
-        session.merge(user_state)
+        session.merge(genre_state)
         session.commit()
 
         return ResponseSchema(
-            data=GenreSchema.from_orm(user_state),
+            data=GenreSchema.from_orm(genre_state),
             message="Genre updated",
             success=True
         )
