@@ -13,7 +13,7 @@ company = Blueprint("company", __name__)
 @company.post('/')
 @validate()
 @authorization
-def create_company_endpoint(token, body: CompanySchema):
+def create(token, body: CompanySchema):
     response = create_company(body)
     return Response(
         json.dumps(response),
@@ -25,7 +25,7 @@ def create_company_endpoint(token, body: CompanySchema):
 @company.get('/')
 @validate()
 @authorization
-def get_company_endpoint(token, body: GetCompanySchema):
+def get(token, body: GetCompanySchema):
     response = get_company(body)
     return Response(
         json.dumps(response),
@@ -36,7 +36,7 @@ def get_company_endpoint(token, body: GetCompanySchema):
 @company.put('/')
 @validate()
 @authorization
-def update_company_endpoint(token, body: CompanySchema):
+def update(token, body: CompanySchema):
     response = update_company(body)
     return Response(
         json.dumps(response),
@@ -48,7 +48,7 @@ def update_company_endpoint(token, body: CompanySchema):
 @company.delete('/')
 @validate()
 @authorization
-def delete_company_endpoint(token, body: GetCompanySchema):
+def delete(token, body: GetCompanySchema):
     response = delete_company(body)
     return Response(
         json.dumps(response),

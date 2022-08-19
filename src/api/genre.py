@@ -13,7 +13,7 @@ genre = Blueprint("genre", __name__)
 @genre.post('/')
 @validate()
 @authorization
-def create_genre_endpoint(token, body: GenreSchema):
+def create(token, body: GenreSchema):
     response = create_genre(body)
     return Response(
         json.dumps(response),
@@ -25,7 +25,7 @@ def create_genre_endpoint(token, body: GenreSchema):
 @genre.get('/')
 @validate()
 @authorization
-def get_genre_endpoint(token, body: GetGenreSchema):
+def get(token, body: GetGenreSchema):
     response = get_genre(body)
     return Response(
         json.dumps(response),
@@ -36,7 +36,7 @@ def get_genre_endpoint(token, body: GetGenreSchema):
 @genre.put('/')
 @validate()
 @authorization
-def update_genre_endpoint(token, body: GenreSchema):
+def update(token, body: GenreSchema):
     response = update_genre(body)
     return Response(
         json.dumps(response),
@@ -48,7 +48,7 @@ def update_genre_endpoint(token, body: GenreSchema):
 @genre.delete('/')
 @validate()
 @authorization
-def delete_genre_endpoint(token, body: GetGenreSchema):
+def delete(token, body: GetGenreSchema):
     response = delete_genre(body)
     return Response(
         json.dumps(response),
