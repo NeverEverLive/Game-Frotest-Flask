@@ -19,9 +19,9 @@ class Company(BaseModel):
     inserted_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
 
-    developer = relationship('Developer', back_populates='company', uselist=False, cascade="all,delete-orphan")
-    publisher = relationship('Publisher', back_populates='company', uselist=False, cascade="all,delete-orphan")
-    sponsor = relationship('Sponsor', back_populates='company', uselist=False, cascade="all,delete-orphan")
+    developer = relationship('Developer', back_populates='company', uselist=True, cascade="all,delete-orphan")
+    publisher = relationship('Publisher', back_populates='company', uselist=True, cascade="all,delete-orphan")
+    sponsor = relationship('Sponsor', back_populates='company', uselist=True, cascade="all,delete-orphan")
 
     __table_args__ = (
         PrimaryKeyConstraint(id),

@@ -20,7 +20,8 @@ class Sponsor(BaseModel):
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
 
     company = relationship('Company', back_populates='sponsor', uselist=False, cascade="all,delete")
-
+    game = relationship('Game', back_populates='sponsor', uselist=True)
+    
     __table_args__ = (
         PrimaryKeyConstraint(id),
         ForeignKeyConstraint(

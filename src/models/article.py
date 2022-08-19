@@ -23,8 +23,8 @@ class Article(BaseModel):
     inserted_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
 
-    game = relationship('Game', back_populates='game', uselist=False, cascade="all,delete")
-    user = relationship('User', back_populates='user', uselist=False, cascade="all,delete")
+    game = relationship('Game', back_populates='article', uselist=False, cascade="all,delete")
+    user = relationship('User', back_populates='article', uselist=False, cascade="all,delete")
 
 
     __table_args__ = (

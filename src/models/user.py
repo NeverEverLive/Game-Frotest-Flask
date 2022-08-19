@@ -18,7 +18,7 @@ class User(BaseModel):
     created_on = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
     
-    article = relationship("Article", back_populates="game", uselist=False, cascade="all,delete")
+    article = relationship("Article", back_populates="user", uselist=True, cascade="all,delete")
 
     __table_args__ = (
         PrimaryKeyConstraint(id),
