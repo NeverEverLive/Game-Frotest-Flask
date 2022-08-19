@@ -1,12 +1,11 @@
 import logging
-from werkzeug.utils import secure_filename
 
 from flask import Response, json, Blueprint, request
 from flask_pydantic import validate
 
 from src.api.utils import authorization
-from src.schema.image import ImageSchema
-from src.operators.image import upload
+from src.schema.image import GetImageSchema
+from src.operators.image import upload, get_image
 
 
 image = Blueprint("image", __name__)
@@ -23,36 +22,13 @@ def create(token):
     )
 
 
-# @genre.get('/')
-# @validate()
-# @authorization
-# def get(token, body: GetGenreSchema):
-#     response = get_genre(body)
-#     return Response(
-#         json.dumps(response),
-#         status=200,
-#         content_type='application/json'
-#     )
-
-# @genre.put('/')
-# @validate()
-# @authorization
-# def update(token, body: GenreSchema):
-#     response = update_genre(body)
-#     return Response(
-#         json.dumps(response),
-#         status=200,
-#         content_type='application/json'
-#     )
-
-
-# @genre.delete('/')
-# @validate()
-# @authorization
-# def delete(token, body: GetGenreSchema):
-#     response = delete_genre(body)
-#     return Response(
-#         json.dumps(response),
-#         status=202,
-#         content_type='application/json'
-#     )
+@image.get('/')
+@validate()
+@authorization
+def get(token, body: GetImageSchema):
+    response, mimetype = get_image(body)
+    logging.warning(mimetype)
+    return Response(
+        response,
+        mimetype=mimetype
+    )

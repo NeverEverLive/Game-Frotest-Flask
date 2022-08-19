@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from src.models.base_model import get_session
 from src.models.image import Image
 from src.schema.response import ResponseSchema
-from src.schema.image import ImageSchema
+from src.schema.image import GetImageSchema, ImageSchema
 
 def upload(image) -> ResponseSchema:
     if not image:
@@ -31,3 +31,15 @@ def upload(image) -> ResponseSchema:
             message="Image uploaded successfuly",
             success=True
         )
+
+def get_image(image: GetImageSchema) -> ResponseSchema:
+    with get_session() as session:
+        genre_state = session.query(Image).filter_by(id=image.id).first()
+
+        if not genre_state:
+            return ResponseSchema(
+                success=False,
+                message="Same image doesn't exist"
+            )
+
+        return genre_state.file, genre_state.mimetype
