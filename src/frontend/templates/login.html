@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+{% block content %}
+    <p><a href="/">Back</a></p>
+    <h1>Login</h1>
+    <div class="col-4">
+        <form id="login_form" method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button form="login_form" type="submit" class="btn btn-primary mt-4">Login</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h1 class="mt-4">Admin panel</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Create new game
+    </button>
+
+{% if update %}
+    <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+        onclick="window.location.href='/edit_game'">Back</button>
+    {% if success_update %}
+        <p class="mt-4" style="color:green">Success update</p>
+    {% endif %}
+    <h5 class="mt-4 mb-4">Update Page</h5>
+    <form id="update_form" method="post">
+      {{game_form}}
+    </form>
+    <button form="update_form" type="submit" class="btn btn-primary mt-4">Update</button>
+
+{% else %}
+<button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+        onclick="window.location.href=/edit">Back</button>
+  {% if success %}
+      <p class="mt-4" style="color:green">Record added</p>
+  {% endif %}
+        {% for index, data in enum_data %}
+          {{index}}
+          {{data.game.title}}
+          {{data.genre.title}}
+          {{data.game.date}}
+          {{data.developer}}
+          <br>
+          <br>
+          <br>
+          <br>
+        {% endfor %}
+{% endif %}
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create game</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form id="add_form" method="post">
+                  {{game_form}}
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button form="add_form" type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

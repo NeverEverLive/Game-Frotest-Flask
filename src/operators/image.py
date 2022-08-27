@@ -32,14 +32,14 @@ def upload(image) -> ResponseSchema:
             success=True
         )
 
-def get_image(image: GetImageSchema) -> ResponseSchema:
+def get_image(id: str) -> ResponseSchema:
     with get_session() as session:
-        genre_state = session.query(Image).filter_by(id=image.id).first()
+        image_state = session.query(Image).filter_by(id=id).first()
 
-        if not genre_state:
+        if not image_state:
             return ResponseSchema(
                 success=False,
                 message="Same image doesn't exist"
             )
 
-        return genre_state.file, genre_state.mimetype
+        return image_state.file, image_state.mimetype

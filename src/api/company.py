@@ -4,7 +4,7 @@ from flask_pydantic import validate
 
 from src.api.utils import authorization
 from src.schema.company import CompanySchema, GetCompanySchema
-from src.operators.company import create_company, update_company, delete_company, get_company
+from src.operators.company import create_company, get_all_companies, update_company, delete_company, get_company
 
 
 company = Blueprint("company", __name__)
@@ -54,4 +54,14 @@ def delete(token, body: GetCompanySchema):
         json.dumps(response),
         status=202,
         content_type='application/json'
+    )
+
+@company.get("/all")
+@authorization
+def get_all(token):
+    response = get_all_companies()
+    return Response(
+        json.dumps(response),
+        status=200,
+        content_type="application/json"
     )

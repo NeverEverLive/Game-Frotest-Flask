@@ -1,12 +1,20 @@
 from datetime import datetime
 from uuid import uuid4
-from src.models.base_model import BaseModel
+import enum
 
-from sqlalchemy import Column, func, PrimaryKeyConstraint
+from sqlalchemy import Column, func, PrimaryKeyConstraint, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.types import String, DateTime
 from marshmallow import Schema, fields
+
+from src.models.base_model import BaseModel
+
+
+class RoleEnum(enum.Enum):
+    editor = "Editor"
+    user = "User"
+    manager = "Manager"
 
 
 class User(BaseModel):
@@ -15,6 +23,7 @@ class User(BaseModel):
     id = Column(UUID(as_uuid=True), nullable=False, unique=True, default=uuid4())
     username = Column(String, unique=True, nullable=False)
     hash_password = Column(String, nullable=False)
+    role = Column(Enum(RoleEnum), default=RoleEnum.user)
     created_on = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
     
@@ -25,7 +34,7 @@ class User(BaseModel):
     )
 
     def __repr__(self):
-        return self.email
+        return self.username
 
     @classmethod
     def get_by_id(cls, id):
@@ -34,7 +43,7 @@ class User(BaseModel):
 
     @classmethod
     def get_by_username(cls, username):
-        """Вернуть пользователя по email"""
+        """Вернуть пользователя по username"""
         return cls.query.filter_by(username=username).first()
 
 
@@ -45,5 +54,5 @@ class LoginUserSchema(Schema):
 
 class CreateUpdateUserSchema(Schema):
     id = fields.UUID()
-    username = fields.Email()
+    username = fields.String()
     hash_password = fields.String()

@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% block content %}
+    <button type="button" class="btn btn-primary" onclick="location.href='/'">Back</button>
+    <h1>{{ article.title }}</h1>
+    <p>Game: {{ game.title }}</p>
+    <br>
+    <img src="data:;base64,{{ image }}"/>
+    <br>
+    <br>
+    <p>Genre: {{ genre.title }}</p>
+    <p>Developer: {{developer.name}}</p>
+    <p>Publisher: {% if publisher %} {{publisher.name}} {% else %} unknown {% endif %}</p>
+    <p>Sponsor: {% if sponsor %} {{sponsor.name}} {% else %} unknown {% endif %}</p>
+
+    <p>Description: {{ article.description }}</p>
+    <p>Article created by: {{ user["username"] }}</p>
+{% endblock %}

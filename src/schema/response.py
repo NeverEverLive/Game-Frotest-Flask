@@ -1,5 +1,5 @@
-from typing import Any, Optional
-from pydantic import BaseModel, root_validator
+from typing import Any, List, Optional
+from pydantic import BaseModel, root_validator, Field
 
 
 SKIP_VALUES = {None}
@@ -31,3 +31,11 @@ class ResponseSchema(BaseModel):
                 elif value not in SKIP_VALUES:
                     result.append(value)
         return result
+
+
+class ManyResponseSchema(BaseModel):
+    __root__: List[ResponseSchema] = Field(alias="data")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True

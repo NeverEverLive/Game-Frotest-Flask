@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, validator
 
@@ -35,5 +35,10 @@ class ArticleSchema(BaseModel):
         orm_mode = True
     
 
-class GetArticleSchema(BaseModel):
-    id: uuid.UUID
+class ArticlesSchema(BaseModel):
+    __root__: List[ArticleSchema] = Field(alias="data")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+

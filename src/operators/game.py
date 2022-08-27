@@ -6,7 +6,7 @@ from src.models.game import Game
 from src.models.developer import Developer
 from src.models.publisher import Publisher
 from src.models.sponsor import Sponsor
-from src.schema.game import GameSchema, GetGameSchema, GameCompanyRelationSchema
+from src.schema.game import GameSchema, GamesSchema, GetGameSchema, GameCompanyRelationSchema
 from src.schema.accomplices import AccomplicesSchema
 from src.schema.response import ResponseSchema
 
@@ -67,12 +67,12 @@ def create_game(data: GameCompanyRelationSchema) -> ResponseSchema:
         )
 
 
-def get_game(game: GetGameSchema) -> ResponseSchema:
+def get_game(id: str) -> ResponseSchema:
     with get_session() as session:
-        game_state = session.query(Game).filter_by(id=game.id).first()
-        developer_state = session.query(Developer).filter_by(game_id=game.id).first()
-        publisher_state = session.query(Publisher).filter_by(game_id=game.id).first()
-        sponsor_state = session.query(Sponsor).filter_by(game_id=game.id).first()
+        game_state = session.query(Game).filter_by(id=id).first()
+        developer_state = session.query(Developer).filter_by(game_id=id).first()
+        publisher_state = session.query(Publisher).filter_by(game_id=id).first()
+        sponsor_state = session.query(Sponsor).filter_by(game_id=id).first()
         
         if not game_state:
             return ResponseSchema(
@@ -98,6 +98,18 @@ def get_game(game: GetGameSchema) -> ResponseSchema:
 
         return ResponseSchema(
             data=GameCompanyRelationSchema.parse_obj(data),
+            success=True
+        )
+
+
+def get_all_game() -> ResponseSchema:
+    with get_session() as session:
+        game_state = session.query(Game).order_by(Game.inserted_at.desc()).all()
+        
+        data = GamesSchema.from_orm(game_state).dict(by_alias=True)["data"]
+    
+        return ResponseSchema(
+            data=data,
             success=True
         )
 

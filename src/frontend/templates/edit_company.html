@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h1 class="mt-4">Admin panel</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Create new company
+    </button>
+
+{% if update %}
+  <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+        onclick="window.location.href='/edit_company'">Back</button>
+  {% if success_update %}
+      <p class="mt-4" style="color:green">Success update</p>
+  {% endif %}
+  <p class="mt-4">Update Page</p>
+  <form id="update_form" method="post">
+    {{update_form}}
+  </form>
+  <button form="update_form" type="submit" class="btn btn-primary mt-4">Update</button>
+
+{% else %}
+    <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+            onclick="window.location.href='/edit'">Back</button>
+    {% if success %}
+      <p class="mt-4" style="color:green">Record added</p>
+    {% endif %}
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                  <th scope="col">id</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Update</th>
+                  <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for company in companies %}
+                  <tr>
+                    <th>{{company.id}}</th>
+                    <td>{{company.name}}</td>
+                    <td>{{company.description}}</td>
+                      <td style="width: 90px">
+                          <button type="button" class="btn btn-primary"  onclick="location.href='update_company/{{company.id}}''">Update</button>
+                      </td>
+                      <td style="width: 90px">
+                          <button type="button" class="btn btn-danger" onclick="location.href='delete_company/{{company.id}}''">Delete</button>
+                      </td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+{% endif %}
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create company</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form id="add_form" method="post">
+                  {{form}}
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button form="add_form" type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

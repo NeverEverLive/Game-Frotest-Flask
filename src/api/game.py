@@ -4,7 +4,7 @@ from flask_pydantic import validate
 
 from src.api.utils import authorization
 from src.schema.game import GetGameSchema, GameCompanyRelationSchema
-from src.operators.game import create_game, get_game
+from src.operators.game import create_game, get_game, get_all_game
 
 
 game = Blueprint("game", __name__)
@@ -23,15 +23,25 @@ def create(token, body: GameCompanyRelationSchema):
     )
 
 
-@game.get('/')
-@validate()
+@game.get('/<string:id>')
 @authorization
-def get(token, body: GetGameSchema):
-    response = get_game(body)
+def get(token, id):
+    response = get_game(id)
     return Response(
         json.dumps(response),
         status=200,
         content_type='application/json'
+    )
+
+
+@game.get("/")
+@authorization
+def get_all(token):
+    response = get_all_game()
+    return Response(
+        json.dumps(response),
+        status=200,
+        content_type="application/json"
     )
 
 # @genre.put('/')

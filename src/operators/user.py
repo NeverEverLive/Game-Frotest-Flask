@@ -104,7 +104,7 @@ def delete_user(token: str) -> Dict[str, Union[str, bool]]:
     return output_data 
 
 
-def get_user(username: str) -> Dict[str, Union[str, bool, Dict[str, str]]]:
+def get_user(id: UUID) -> Dict[str, Union[str, bool, Dict[str, str]]]:
     """Вернуть пользователя
         
         Входные параметры:
@@ -113,8 +113,8 @@ def get_user(username: str) -> Dict[str, Union[str, bool, Dict[str, str]]]:
         Исходящие параметры:
         :params data: Словарь с результатами
     """
-    if isinstance(username, str):
-        user = User.get_by_username(username)
+    if isinstance(id, UUID):
+        user = User.get_by_id(id)
         data = {
             'success': True,
             'user': {

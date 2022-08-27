@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, validator
 from src.schema.accomplices import AccomplicesSchema
@@ -34,9 +34,16 @@ class GameSchema(BaseModel):
         orm_mode = True
     
 
+class GamesSchema(BaseModel):
+    __root__: List[GameSchema] = Field(alias="data")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
 class GetGameSchema(BaseModel):
     id: uuid.UUID
-
 
 
 class GameCompanyRelationSchema(BaseModel):

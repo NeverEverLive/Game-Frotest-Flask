@@ -41,3 +41,8 @@ class Sponsor(BaseModel):
             )
         )
     )
+
+    @classmethod
+    def get_by_game_id(cls, id):
+        """Вернуть пользователя по id"""
+        return cls.query.filter_by(game_id=id).first()
