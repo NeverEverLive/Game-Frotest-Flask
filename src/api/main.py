@@ -1,4 +1,5 @@
 from base64 import b64encode
+import logging
 from flask import render_template, Blueprint, request
 from src.models.developer import Developer
 from src.models.publisher import Publisher
@@ -7,7 +8,7 @@ from src.models.sponsor import Sponsor
 from src.api.utils import authorization
 from src.operators.image import get_image
 from src.operators.company import get_all_companies, get_company
-from src.operators.genre import get_genre
+from src.operators.genre import get_all_genries, get_genre
 from src.operators.user import get_user
 from src.operators.game import get_all_game, get_game
 from src.operators.article import get_all_article, get_article
@@ -125,3 +126,44 @@ def edit__companies_page():
     )
 
 
+@main.route("/update_game/<string:id>")
+def update_game(id):
+
+    game_info = get_game(id).data
+
+    game = game_info.game
+    current_developer = game_info.developer
+    current_developer = get_company(current_developer.company_id).data
+    
+    current_publisher = game_info.publisher
+    if current_publisher:
+        current_publisher = get_company(current_publisher.company_id).data
+
+    current_sponsor = game_info.sponsor
+    if current_sponsor:
+        current_sponsor = get_company(current_sponsor.company_id).data
+
+    current_genre = get_genre(game.genre_id).data
+    image, _ = get_image(game.image_id)
+    current_image = image = b64encode(image).decode("utf-8")
+    
+    companies = get_all_companies().data
+    genries = get_all_genries().data
+
+    return render_template(
+        "test.html",
+        game=game,
+        current_developer=current_developer,
+        current_publisher=current_publisher,
+        current_sponsor=current_sponsor,
+        current_genre=current_genre,
+        current_image=current_image,
+        companies=companies,
+        genries=genries
+    )
+
+
+@main.post("/submit_game")
+def submit_update():
+    logging.warning(request.form)
+    logging.warning(request.files)

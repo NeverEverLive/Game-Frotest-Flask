@@ -1,59 +1,77 @@
 {% extends 'index.html' %}
 {% block content %}
-    <h1 class="mt-4">Admin panel</h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Create new game
-    </button>
+  <form method="POST" action="/submit_game", enctype="multipart/form-data">
+    <label for="exampleInputTitle">Game title</label>
+    <input type="text" name ="inputTitle" class="form-control mb-3" id="exampleInputTitle" placeholder="Enter title" value="{{game.title}}">
 
-{% if update %}
-    <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
-        onclick="window.location.href='/edit_game'">Back</button>
-    {% if success_update %}
-        <p class="mt-4" style="color:green">Success update</p>
-    {% endif %}
-    <h5 class="mt-4 mb-4">Update Page</h5>
-    <form id="update_form" method="post">
-      {{game_form}}
-    </form>
-    <button form="update_form" type="submit" class="btn btn-primary mt-4">Update</button>
+    <label for="exampleInputDescription">Description</label>
+    <input type="text" name ="inputDescription" class="form-control  mb-3" id="exampleInputDescription" placeholder="Enter description" value="{{game.description}}">
 
-{% else %}
-<button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
-        onclick="window.location.href=/edit">Back</button>
-  {% if success %}
-      <p class="mt-4" style="color:green">Record added</p>
-  {% endif %}
-        {% for index, data in enum_data %}
-          {{index}}
-          {{data.game.title}}
-          {{data.genre.title}}
-          {{data.game.date}}
-          {{data.developer}}
-          <br>
-          <br>
-          <br>
-          <br>
-        {% endfor %}
-{% endif %}
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Create game</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <form id="add_form" method="post">
-                  {{game_form}}
-              </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button form="add_form" type="submit" class="btn btn-primary">Add</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <label for="exampleInputDate">Date</label>
+    <input type="date" name ="inputDate" class="form-control mb-3" id="exampleInputDate" placeholder="Enter date" value="{{game.date}}">
 
+    <label for="exampleSelectGenre">Select genre</label>
+    <select class="form-control mb-3" name="selectGenre" aria-label="Select genre">
+      {% if current_genre %}
+        <option selected>{{current_genre.title}}</option>
+      {% else %}
+        <option selected>Select Genre</option>
+      {% endif %}
+      {% for genre in genries%}
+        {% if genre.title != current_genre.title %}
+          <option value="1">{{genre.title}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="exampleInputTitle">Select developer</label>
+    <select class="form-control mb-3" name="selectDeveloper" aria-label="Select developer">
+      {% if current_developer %}
+        <option selected>{{current_developer.name}}</option>
+      {% else %}
+        <option selected>Select developer</option>
+      {% endif %}
+      {% for company in companies%}
+        {% if company.name != current_developer.name %}
+          <option value="1">{{company.name}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="exampleInputTitle">Select publisher</label>
+    <select class="form-control mb-3" name="selectPublisher" aria-label="Select publisher">
+      {% if current_publisher %}
+        <option selected>{{current_publisher.name}}</option>
+      {% else %}
+        <option selected>Select publisher</option>
+      {% endif %}
+      {% for company in companies%}
+        {% if company.name != current_publisher.name %}
+          <option value="1">{{company.name}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="exampleInputTitle">Select sponsor</label>
+    <select class="form-control mb-3" name="selectSponsor" aria-label="Select sponsor">
+      {% if current_sponsor %}
+        <option selected>{{current_sponsor.name}}</option>
+      {% else %}
+        <option selected>Select sponsor</option>
+      {% endif %}
+      {% for company in companies%}
+        {% if company.name != current_sponsor.name %}
+          <option value="1">{{company.name}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    
+    <label for="exampleInputImage">Image</label>
+    <br>
+    <img class="mt-3" src="data:;base64,{{ current_image }}"/>
+    <input type="file" name="fileImage" class="form-control-file mt-3" id="exampleInputImage">
+  
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+  </form>
+  
 {% endblock %}

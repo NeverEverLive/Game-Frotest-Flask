@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 import uuid
 
@@ -17,3 +17,11 @@ class GenreSchema(BaseModel):
 
 class GetGenreSchema(BaseModel):
     id: uuid.UUID
+
+
+class GenresSchema(BaseModel):
+    __root__: List[GenreSchema] = Field(alias="data")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True

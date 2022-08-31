@@ -3,7 +3,7 @@
 import logging
 from src.models.base_model import get_session
 from src.models.genre import Genre
-from src.schema.genre import GenreSchema, GetGenreSchema
+from src.schema.genre import GenreSchema, GenresSchema, GetGenreSchema
 from src.schema.response import ResponseSchema
 
 
@@ -35,6 +35,17 @@ def get_genre(id: str) -> ResponseSchema:
 
         return ResponseSchema(
             data=GenreSchema.from_orm(genre_state),
+            success=True
+        )
+
+def get_all_genries() -> ResponseSchema:
+    with get_session() as session:
+        article_state = session.query(Genre).order_by(Genre.inserted_at.desc()).all()
+
+        data = GenresSchema.from_orm(article_state).dict(by_alias=True)["data"]
+
+        return ResponseSchema(
+            data=data,
             success=True
         )
 
