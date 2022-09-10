@@ -1,6 +1,8 @@
 
 
 import logging
+from uuid import uuid4
+from src.models.logger import Logger
 from src.models.base_model import get_session
 from src.models.genre import Genre
 from src.schema.genre import GenreSchema, GenresSchema, GetGenreSchema
@@ -15,7 +17,18 @@ def create_genre(genre: GenreSchema) -> ResponseSchema:
     with get_session() as session:
         session.add(genre_state)
         session.commit()
-        
+
+        logger_data = {
+            "id": uuid4(),
+            "table": "genre",
+            "action": "delete",
+            "object_info": GenreSchema.from_orm(genre_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
+
         return ResponseSchema(
             data=GenreSchema.from_orm(genre_state),
             message="Genre created successfuly",
@@ -67,10 +80,21 @@ def get_all_genries() -> ResponseSchema:
 
 def update_genre(genre: GenreSchema) -> ResponseSchema:
 
-    genre_state = Genre().fill(**genre.dict())
-
     with get_session() as session:
+        logger_data = {
+            "id": uuid4(),
+            "table": "genre",
+            "action": "update",
+            "object_info": GenreSchema.from_orm(session.query(Genre).filter_by(id=genre.id).first()).dict()
+        }
+
+        genre_state = Genre().fill(**genre.dict())
+
         session.merge(genre_state)
+        session.commit()
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
         session.commit()
 
         return ResponseSchema(
@@ -92,6 +116,17 @@ def delete_genre(genre: GetGenreSchema) -> ResponseSchema:
             )
 
         session.delete(genre_state)
+        session.commit()
+
+        logger_data = {
+            "id": uuid4(),
+            "table": "genre",
+            "action": "insert",
+            "object_info": GenreSchema.from_orm(genre_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
         session.commit()
 
         return ResponseSchema(

@@ -10,5 +10,6 @@ from src.models.sponsor import Sponsor
 from src.models.game import Game
 from src.models.genre import Genre
 from src.models.image import Image
+from src.models.logger import Logger
 
 set_session()

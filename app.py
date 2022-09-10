@@ -11,6 +11,7 @@ from src.api.image import image
 from src.api.game import game
 from src.api.article import article
 from src.api.main import main
+from src.api.logger import logger
 from settings import app_config
 
 
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(image, url_prefix='/api/image')
     app.register_blueprint(game, url_prefix='/api/game')
     app.register_blueprint(article, url_prefix='/api/article')
+    app.register_blueprint(logger, url_prefix='/api/logger')
     app.register_blueprint(main, url_prefix='/')
 
 

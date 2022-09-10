@@ -1,5 +1,6 @@
+from re import L
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 import uuid
 
 
@@ -7,6 +8,11 @@ class GenreSchema(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     title: str
     description: Optional[str]
+
+    @validator("id")
+    def uuid_to_str(cls, value: uuid.UUID):
+        if isinstance(value, uuid.UUID):
+            return str(value)
 
     def __hash__(self):
         return hash((self.id, self.title, self.description))
