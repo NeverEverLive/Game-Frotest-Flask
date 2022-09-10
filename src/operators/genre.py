@@ -38,6 +38,21 @@ def get_genre(id: str) -> ResponseSchema:
             success=True
         )
 
+def get_genre_by_title(title: str) -> ResponseSchema:
+    with get_session() as session:
+        genre_state = session.query(Genre).filter_by(title=title).first()
+
+        if not genre_state:
+            return ResponseSchema(
+                success=False,
+                message="Same genre doesn't exist"
+            )
+
+        return ResponseSchema(
+            data=GenreSchema.from_orm(genre_state),
+            success=True
+        )
+
 def get_all_genries() -> ResponseSchema:
     with get_session() as session:
         article_state = session.query(Genre).order_by(Genre.inserted_at.desc()).all()

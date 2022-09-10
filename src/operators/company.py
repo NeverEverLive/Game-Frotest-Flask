@@ -37,6 +37,23 @@ def get_company(id: str) -> ResponseSchema:
         )
 
 
+def get_company_by_name(name: str) -> ResponseSchema:
+    with get_session() as session:
+        company_state = session.query(Company).filter_by(name=name).first()
+
+        if not company_state:
+            return ResponseSchema(
+                data="",
+                success=False,
+                message="Same company doesn't exist"
+            )
+
+        return ResponseSchema(
+            data=CompanySchema.from_orm(company_state),
+            success=True
+        )
+
+
 def get_all_companies() -> ResponseSchema:
     with get_session() as session:
         company_state = session.query(Company).all()
@@ -62,10 +79,10 @@ def update_company(company: CompanySchema) -> ResponseSchema:
         )
 
 
-def delete_company(company: GetCompanySchema) -> ResponseSchema:
+def delete_company(id: str) -> ResponseSchema:
 
     with get_session() as session:
-        company_state = session.query(Company).filter_by(id=company.id).first()
+        company_state = session.query(Company).filter_by(id=id).first()
 
         if not company_state:
             return ResponseSchema(

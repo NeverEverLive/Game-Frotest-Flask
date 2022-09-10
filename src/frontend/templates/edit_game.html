@@ -1,86 +1,127 @@
 {% extends 'index.html' %}
 {% block content %}
-    <h1 class="mt-4">Admin panel</h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Create new game
-    </button>
+  <h1 class="mt-4">Admin panel</h1>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Create new game
+  </button>
 
-{% if update %}
-    <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
-        onclick="window.location.href='/edit_game'">Back</button>
-    {% if success_update %}
-        <p class="mt-4" style="color:green">Success update</p>
-    {% endif %}
-    <h5 class="mt-4 mb-4">Update Page</h5>
-    <form id="update_form" method="post">
-      {{game_form}}
-    </form>
-    <button form="update_form" type="submit" class="btn btn-primary mt-4">Update</button>
+  <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+          onclick="window.location.href='/edit'">Back</button>
 
-{% else %}
-<button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
-        onclick="window.location.href='/edit'">Back</button>
+  {% if success_update %}
+      <p class="mt-4" style="color:green">Success update</p>
+  {% endif %}
+
+  {% if success_delete %}
+      <h4 class="mt-4" style="color:red">Success delete</h4>
+  {% endif %}
+
   {% if success %}
       <p class="mt-4" style="color:green">Record added</p>
   {% endif %}
-        <table class="table table-hover mt-4">
-            <thead>
-                <tr>
-                  <th scope="col">id</th>
-                  <th scope="col">Game</th>
-                  <th scope="col">Genre</th>
-                  <th style="width: 150px" scope="col">Release date</th>
-                  <th scope="col">Developer</th>
-                  <th scope="col">Publisher</th>
-                  <th scope="col">Sponsor</th>
-                  <th scope="col">Image</th>
-                  <th scope="col">Update</th>
-                  <th scope="col">Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-              {% for index, data in enum_data %}
-                  <tr>
-                    <th>{{data.game.id}}</th>
-                    <td>{{data.game.title}}</td>
-                    <td>{{data.genre.title}}</td>
-                    <td>{{data.game.date}}</td>
-                    <td>{{data.developer.name}}</td>
-                    <td>{{data.publisher.name}}</td>
-                    <td>{{data.sponsor.name}}</td>
-                    <td>
-                        <img style="max-width: 100px;" src="data:;base64,{{ data.image }}"/>
-                    </td>
-                      <td style="width: 90px">
-                          <button type="button" class="btn btn-primary" onclick="location.href='/update_game/{{data.game.id}}'">Update</button>
-                    </td>
-                    <td style="width: 90px">
-                        <button type="button" class="btn btn-danger" onclick="location.href='/delete_game/{{data.game.id}}'">Delete</button>
-                    </td>
-                  </tr>
-              {% endfor %}
-          </tbody>
-        </table>
-{% endif %}
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Create game</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <form id="add_form" method="post">
-                  {{game_form}}
-              </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button form="add_form" type="submit" class="btn btn-primary">Add</button>
-          </div>
-        </div>
+
+  <table class="table table-hover mt-4">
+      <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">Game</th>
+            <th scope="col">Genre</th>
+            <th style="width: 150px" scope="col">Release date</th>
+            <th scope="col">Developer</th>
+            <th scope="col">Publisher</th>
+            <th scope="col">Sponsor</th>
+            <th scope="col">Image</th>
+            <th scope="col">Update</th>
+            <th scope="col">Delete</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for index, data in enum_data %}
+            <tr>
+              <th>{{data.game.id}}</th>
+              <td>{{data.game.title}}</td>
+              <td>{{data.genre.title}}</td>
+              <td>{{data.game.date}}</td>
+              <td>{{data.developer.name}}</td>
+              <td>{{data.publisher.name}}</td>
+              <td>{{data.sponsor.name}}</td>
+              <td>
+                  <img style="max-width: 100px;" src="data:;base64,{{ data.image }}"/>
+              </td>
+                <td style="width: 90px">
+                    <button type="button" class="btn btn-primary" onclick="location.href='/update_game/{{data.game.id}}'">Update</button>
+              </td>
+              <td style="width: 90px">
+                  <button type="button" class="btn btn-danger" onclick="location.href='/delete_game/{{data.game.id}}'">Delete</button>
+              </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create game</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="modal-body">
+          <form method="POST" action="/create_game", enctype="multipart/form-data">
+
+            <label for="exampleInputTitle">Game title</label>
+            <input type="text" name ="inputTitle" class="form-control mb-3" id="exampleInputTitle" placeholder="Enter title" required>
+
+            <label for="exampleInputDescription">Description</label>
+            <textarea name ="inputDescription" class="form-control mb-3" id="exampleFormControlTextarea1" rows="3" placeholder="Enter description"></textarea>
+
+            <label for="exampleInputDate">Date</label>
+            <input type="date" name ="inputDate" class="form-control mb-3" id="exampleInputDate" placeholder="Enter date" required>
+
+            <label for="exampleSelectGenre">Select genre</label>
+            <select required class="form-control mb-3" name="selectGenre" aria-label="Select genre">
+              <option value="">Select Genre</option>
+              {% for genre in genries%}
+                <option value="{{genre.title}}">{{genre.title}}</option>
+              {% endfor %}
+            </select>
+
+            <label for="exampleInputTitle">Select developer</label>
+            <select class="form-control mb-3" name="selectDeveloper" aria-label="Select developer">
+              <option selected>Select developer</option>
+              {% for company in companies%}
+                <option value="{{company.name}}">{{company.name}}</option>
+              {% endfor %}
+            </select>
+
+            <label for="exampleInputTitle">Select publisher</label>
+            <select class="form-control mb-3" name="selectPublisher" aria-label="Select publisher">
+              <option selected>Select publisher</option>
+              {% for company in companies%}
+                  <option value="{{company.name}}">{{company.name}}</option>
+              {% endfor %}
+            </select>
+
+            <label for="exampleInputTitle">Select sponsor</label>
+            <select class="form-control mb-3" name="selectSponsor" aria-label="Select sponsor">
+              <option selected>Select sponsor</option>
+              {% for company in companies%}
+                  <option value="{{company.name}}">{{company.name}}</option>
+              {% endfor %}
+            </select>
+            
+            <label for="exampleInputImage">Image</label>
+            <input type="file" name="fileImage" class="form-control-file mt-3" id="exampleInputImage" required>
+
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+          </form>
+      </div>
+
     </div>
+  </div>
+</div>
+    
 
 {% endblock %}

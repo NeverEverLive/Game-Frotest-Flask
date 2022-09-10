@@ -32,7 +32,11 @@ def create_user(data: Dict[str, str]) -> Dict[str, str]:
 
     output_data = {
         'success': True,
-        'message': 'User created'
+        'message': 'User created',
+        "user": {
+            "id": data["id"],
+            "username": data["username"]
+        }
     }
 
     return output_data

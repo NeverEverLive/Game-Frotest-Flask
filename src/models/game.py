@@ -22,12 +22,12 @@ class Game(BaseModel):
     inserted_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.datetime.now())
 
-    image = relationship('Image', back_populates='game', uselist=False, cascade="all,delete")
-    genre = relationship('Genre', back_populates='game', uselist=False, cascade="all,delete")
-    article = relationship("Article", back_populates="game", uselist=True, cascade="all,delete-orphan")
-    developer = relationship('Developer', back_populates='game', uselist=False)
-    publisher = relationship('Publisher', back_populates='game', uselist=False)
-    sponsor = relationship('Sponsor', back_populates='game', uselist=False)
+    image = relationship('Image', back_populates='game', uselist=False)
+    genre = relationship('Genre', back_populates='game', uselist=False)
+    article = relationship("Article", back_populates="game", uselist=True, cascade="all,delete")
+    developer = relationship('Developer', back_populates='game', uselist=False, cascade="all,delete-orphan")
+    publisher = relationship('Publisher', back_populates='game', uselist=False, cascade="all,delete-orphan")
+    sponsor = relationship('Sponsor', back_populates='game', uselist=False, cascade="all,delete-orphan")
 
 
     __table_args__ = (

@@ -19,7 +19,7 @@ class Sponsor(BaseModel):
     inserted_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
 
-    company = relationship('Company', back_populates='sponsor', uselist=False, cascade="all,delete")
+    company = relationship('Company', back_populates='sponsor', uselist=False)
     game = relationship('Game', back_populates='sponsor', uselist=True)
     
     __table_args__ = (

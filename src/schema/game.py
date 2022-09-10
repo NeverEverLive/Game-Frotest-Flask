@@ -27,7 +27,7 @@ class GameSchema(BaseModel):
     @validator('date', pre=True)
     def data_formatter(cls, value: str):
         if isinstance(value, str):
-            value = datetime.datetime.strptime(value, '%d-%m-%Y')
+            value = datetime.datetime.strptime(value, '%Y-%m-%d')
         return value
 
     class Config:

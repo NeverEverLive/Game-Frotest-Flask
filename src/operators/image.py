@@ -9,8 +9,9 @@ from src.schema.image import GetImageSchema, ImageSchema
 def upload(image) -> ResponseSchema:
     if not image:
         return ResponseSchema(
+            data="",
             message="No image uploaded",
-            status=False
+            success=False
         )
     
     filename = secure_filename(image.filename)

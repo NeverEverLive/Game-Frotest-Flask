@@ -1,17 +1,24 @@
 {% extends 'index.html' %}
 {% block content %}
+  <h1 class="mt-4 mb-4">Update {{game.title}} game</h1>
+  <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+        onclick="window.location.href='/edit_game'">Back</button>
+        
   <form method="POST" action="/submit_game", enctype="multipart/form-data">
+    <label for="exampleGameId">Game id</label>
+    <input type="text" name ="GameId" class="form-control mb-3 w-50" id="exampleGameId" value="{{game.id}}" readonly>
+
     <label for="exampleInputTitle">Game title</label>
-    <input type="text" name ="inputTitle" class="form-control mb-3" id="exampleInputTitle" placeholder="Enter title" value="{{game.title}}">
+    <input type="text" name ="inputTitle" class="form-control mb-3 w-50" id="exampleInputTitle" placeholder="Enter title" value="{{game.title}}">
 
     <label for="exampleInputDescription">Description</label>
-    <input type="text" name ="inputDescription" class="form-control  mb-3" id="exampleInputDescription" placeholder="Enter description" value="{{game.description}}">
+    <textarea name ="inputDescription" class="form-control mb-3 w-50" id="exampleFormControlTextarea1" rows="3" placeholder="Enter description">{{game.description}}</textarea>
 
     <label for="exampleInputDate">Date</label>
-    <input type="date" name ="inputDate" class="form-control mb-3" id="exampleInputDate" placeholder="Enter date" value="{{game.date}}">
+    <input type="date" name ="inputDate" class="form-control mb-3 w-50" id="exampleInputDate" placeholder="Enter date" value="{{game.date}}">
 
     <label for="exampleSelectGenre">Select genre</label>
-    <select class="form-control mb-3" name="selectGenre" aria-label="Select genre">
+    <select class="form-control mb-3 w-50" name="selectGenre" aria-label="Select genre">
       {% if current_genre %}
         <option selected>{{current_genre.title}}</option>
       {% else %}
@@ -19,13 +26,14 @@
       {% endif %}
       {% for genre in genries%}
         {% if genre.title != current_genre.title %}
-          <option value="1">{{genre.title}}</option>
+          <option value="{{genre.title}}">{{genre.title}}</option>
         {% endif %}
       {% endfor %}
+      <option value="">---------</option>
     </select>
 
     <label for="exampleInputTitle">Select developer</label>
-    <select class="form-control mb-3" name="selectDeveloper" aria-label="Select developer">
+    <select class="form-control mb-3 w-50" name="selectDeveloper" aria-label="Select developer">
       {% if current_developer %}
         <option selected>{{current_developer.name}}</option>
       {% else %}
@@ -33,13 +41,14 @@
       {% endif %}
       {% for company in companies%}
         {% if company.name != current_developer.name %}
-          <option value="1">{{company.name}}</option>
+          <option value="{{company.name}}">{{company.name}}</option>
         {% endif %}
       {% endfor %}
+      <option value="">---------</option>
     </select>
 
     <label for="exampleInputTitle">Select publisher</label>
-    <select class="form-control mb-3" name="selectPublisher" aria-label="Select publisher">
+    <select class="form-control mb-3 w-50" name="selectPublisher" aria-label="Select publisher">
       {% if current_publisher %}
         <option selected>{{current_publisher.name}}</option>
       {% else %}
@@ -47,13 +56,14 @@
       {% endif %}
       {% for company in companies%}
         {% if company.name != current_publisher.name %}
-          <option value="1">{{company.name}}</option>
+          <option value="{{company.name}}">{{company.name}}</option>
         {% endif %}
       {% endfor %}
+      <option value="">---------</option>
     </select>
 
     <label for="exampleInputTitle">Select sponsor</label>
-    <select class="form-control mb-3" name="selectSponsor" aria-label="Select sponsor">
+    <select class="form-control mb-3 w-50" name="selectSponsor" aria-label="Select sponsor">
       {% if current_sponsor %}
         <option selected>{{current_sponsor.name}}</option>
       {% else %}
@@ -61,9 +71,10 @@
       {% endif %}
       {% for company in companies%}
         {% if company.name != current_sponsor.name %}
-          <option value="1">{{company.name}}</option>
+          <option value="{{company.name}}">{{company.name}}</option>
         {% endif %}
       {% endfor %}
+      <option value="">---------</option>
     </select>
     
     <label for="exampleInputImage">Image</label>
