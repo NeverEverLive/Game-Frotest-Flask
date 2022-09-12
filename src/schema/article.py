@@ -25,11 +25,16 @@ class ArticleSchema(BaseModel):
             self.user_id
         ))
 
-    @validator('date', pre=True)
+    @validator("id", "game_id", "user_id")
+    def uuid_to_str(cls, value: uuid.UUID):
+        if isinstance(value, uuid.UUID):
+            return str(value)
+
+    @validator('date')
     def data_formatter(cls, value: str):
         if isinstance(value, str):
             value = datetime.datetime.strptime(value, '%d-%m-%Y')
-        return value
+        return str(value)
 
     class Config:
         orm_mode = True
@@ -42,3 +47,6 @@ class ArticlesSchema(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
+
+class GetArticleSchema(BaseModel):
+    id: uuid.UUID
