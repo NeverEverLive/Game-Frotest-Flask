@@ -117,18 +117,15 @@ def get_user(id: UUID) -> Dict[str, Union[str, bool, Dict[str, str]]]:
         Исходящие параметры:
         :params data: Словарь с результатами
     """
-    if isinstance(id, UUID):
-        user = User.get_by_id(id)
-        data = {
-            'success': True,
-            'user': {
-                "id": user.id,
-                "username": user.username,
-                "created_on": user.created_on
-            }
+    user = User.get_by_id(id)
+    data = {
+        'success': True,
+        'user': {
+            "id": user.id,
+            "username": user.username,
+            "created_on": user.created_on
         }
-    else:
-        raise ValueError('Incorrect username')
+    }
     return data
 
 

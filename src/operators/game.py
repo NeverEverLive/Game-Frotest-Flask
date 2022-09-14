@@ -111,8 +111,6 @@ def get_all_game() -> ResponseSchema:
         game_state = session.query(Game).order_by(Game.inserted_at.desc()).all()
         
         data = GamesSchema.from_orm(game_state).dict(by_alias=True)["data"]
-    
-        logging.warning(data)
 
         return ResponseSchema(
             data=data,

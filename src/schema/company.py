@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 import uuid
 
 
@@ -10,6 +10,11 @@ class CompanySchema(BaseModel):
 
     def __hash__(self):
         return hash((self.id, self.name, self.description))
+
+    @validator("id")
+    def uuid_to_str(cls, value: uuid.UUID):
+        if isinstance(value, uuid.UUID):
+            return str(value)
 
     class Config:
         orm_mode = True

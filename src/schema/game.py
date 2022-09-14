@@ -24,11 +24,11 @@ class GameSchema(BaseModel):
             self.genre_id
         ))
 
-    @validator('date', pre=True)
+    @validator('date')
     def data_formatter(cls, value: str):
         if isinstance(value, str):
-            value = datetime.datetime.strptime(value, '%Y-%m-%d')
-        return value
+            value = datetime.datetime.strptime(value, '%d-%m-%Y')
+        return str(value)
 
     class Config:
         orm_mode = True

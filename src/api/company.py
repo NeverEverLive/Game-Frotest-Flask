@@ -48,8 +48,8 @@ def update(token, body: CompanySchema):
 @company.delete('/')
 @validate()
 @authorization
-def delete(token, body: GetCompanySchema):
-    response = delete_company(body)
+def delete(token, query: GetCompanySchema):
+    response = delete_company(query.id)
     return Response(
         json.dumps(response),
         status=202,

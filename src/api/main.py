@@ -1,6 +1,8 @@
 from base64 import b64encode
+import datetime
 import logging
 from flask import render_template, Blueprint, request
+from src.schema.article import ArticleSchema
 from src.schema.company import CompanySchema
 from src.operators.accompile import create_accompile
 from src.models.developer import Developer
@@ -13,7 +15,7 @@ from src.operators.company import create_company, delete_company, get_all_compan
 from src.operators.genre import get_all_genries, get_genre, get_genre_by_title
 from src.operators.user import create_user, get_user, login_user
 from src.operators.game import create_game, delete_game, get_all_game, get_game, update_game
-from src.operators.article import get_all_article, get_article
+from src.operators.article import create_article, get_all_article, get_article
 from src.schema.game import GameCompanyRelationSchema, GameSchema
 
 
@@ -30,8 +32,12 @@ def home(authorization_message=None):
         data = get_all_article().data
     except:
         data = []
-        
 
+    try:
+        games = get_all_game().data
+    except:
+        games = []
+        
     logging.warning(current_user)
 
     return render_template(
@@ -40,7 +46,8 @@ def home(authorization_message=None):
         request=request,
         current_user=current_user,
         authorization_message=authorization_message,
-        queryset=data
+        queryset=data,
+        games=games
     )
 
 @main.route('/detail/<string:id>')
@@ -284,10 +291,6 @@ def create_game_edpoint():
         sponsor_company = get_company_by_name(sponsor).data
         sponsor = create_accompile(sponsor_company, Sponsor, game.id).data
 
-
-    logging.warning(developer.company_id)
-    logging.warning(publisher)
-    logging.warning(sponsor)
     if not publisher:
         publisher = None
     if not sponsor:
@@ -393,6 +396,79 @@ def delete_company_edpoint(id):
         )
 
 
+@main.post("/create_article")
+def create_article_endpoint():
+    request_form = request.form
+
+    article_title = request_form["inputTitle"]
+    article_description = request_form["inputDescription"]
+    article_date = request_form.get("inputDate", datetime.datetime.now())
+    article_published = request_form.get("checkIsPusblished", False)
+    game_id = request_form["selectGame"]
+    logging.warning(game_id)
+    article = ArticleSchema(
+        title=article_title,
+        description=article_description,
+        date=article_date,
+        is_published=article_published,
+        game_id=game_id,
+        user_id=current_user["id"]
+    )
+    
+    create_article(article)
+
+    return home()
+
+
+# @main.route("/update_company/<string:id>")
+# def update_company_endpoint(id):
+
+#     company_info = get_company(id).data
+
+#     current_company_title = company_info.name
+#     current_company_description = company_info.description
+
+#     logging.warning("1")
+
+#     return render_template(
+#         "update_company.html",
+#         company=company_info,
+#         current_title=current_company_title,
+#         current_user=current_user,
+#         current_description=current_company_description
+#     )
+
+
+# @main.post("/submit_company")
+# def submit_update_company():
+
+#     request_form = request.form
+
+#     company = get_company(request_form["companyId"]).data
+
+#     company.name = request_form["inputTitle"]
+#     company.description = request_form["inputDescription"]
+
+#     update_company(company)
+
+#     return edit_companies_page(
+#         success_update=True,
+#         current_user=current_user,
+
+#         )
+
+
+# @main.get("/delete_company/<string:id>")
+# def delete_company_edpoint(id):
+#     delete_company(id)
+
+#     return edit_companies_page(
+#         success_delete=True,
+#         current_user=current_user,
+#         )
+
+
+
 @main.get("/login")
 def get_login_request_edpoint(error_message=None):
     
@@ -417,7 +493,7 @@ def login_user_edpoint():
 
     global current_user
     try:
-        current_user = login_user(data)["user"]["username"]
+        current_user = login_user(data)["user"]
     except ValueError as error:
         return get_login_request_edpoint(str(error))
 

@@ -22,7 +22,7 @@
           </li>
           <li class="nav-item">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-1">
-                <p style="position:absolute; right: 60px">User: {{current_user}}</p>
+                <p style="position:absolute; right: 60px">User: {{current_user.username}}</p>
             </div>
           </li>
         {% else %}
@@ -58,6 +58,9 @@
   {% endif %}
   <div class="container mt-4">
       {% block content %}
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="position:absolute; right: 350px;" {% if current_user %} {% else %} title="you must be logged in" disabled {% endif%}>
+            Create article
+          </button>
           <h1 class="mt-4">Articles</h1>
           {% if queryset %}
             {% for i in queryset %}
@@ -75,6 +78,47 @@
       {% endblock %}
 
   </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create game</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form method="POST" action="/create_article", enctype="multipart/form-data">
+
+            <label for="exampleInputTitle">Articl title</label>
+            <input type="text" name ="inputTitle" class="form-control mb-3" id="exampleInputTitle" placeholder="Enter title" required>
+
+            <label for="exampleInputDescription">Description</label>
+            <textarea name ="inputDescription" class="form-control mb-3" id="exampleFormControlTextarea1" rows="3" placeholder="Enter description"></textarea>
+
+            <label for="exampleInputDate">Date</label>
+            <input type="date" name ="inputDate" class="form-control mb-3" id="exampleInputDate" placeholder="Enter date">
+            
+            <input type="checkbox" name ="inputIsPublished" class="mb-3" id="exampleIsPublished">
+            <label for="exampleIsPublished">Is published?</label>
+            <br>
+
+            <label for="exampleSelectGenre">Select game</label>
+            <select required class="form-control mb-3" name="selectGame" aria-label="Select genre">
+              {% for game in games%}
+                <option value="{{game.id}}">{{game.title}}</option>
+              {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+          </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

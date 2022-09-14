@@ -1,5 +1,7 @@
 import logging
+import uuid
 
+from src.models.logger import Logger
 from src.models.base_model import get_session
 from src.models.company import Company
 from src.schema.company import CompaniesSchema, CompanySchema, GetCompanySchema
@@ -14,6 +16,18 @@ def create_company(company: CompanySchema) -> ResponseSchema:
     with get_session() as session:
         session.add(company_state)
         session.commit()
+
+        logger_data = {
+            "id": uuid.uuid4(),
+            "table": "company",
+            "action": "delete",
+            "object_info": CompanySchema.from_orm(company_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
+
         return ResponseSchema(
             data=CompanySchema.from_orm(company_state),
             message="Company created successfuly",
@@ -65,11 +79,20 @@ def get_all_companies() -> ResponseSchema:
 
 
 def update_company(company: CompanySchema) -> ResponseSchema:
-
-    company_state = Company().fill(**company.dict())
-
     with get_session() as session:
+        logger_data = {
+                "id": uuid.uuid4(),
+                "table": "company",
+                "action": "update",
+                "object_info": CompanySchema.from_orm(session.query(Company).filter_by(id=company.id).first()).dict()
+            }
+
+        company_state = Company().fill(**company.dict())
         session.merge(company_state)
+        session.commit()
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
         session.commit()
 
         return ResponseSchema(
@@ -80,7 +103,6 @@ def update_company(company: CompanySchema) -> ResponseSchema:
 
 
 def delete_company(id: str) -> ResponseSchema:
-
     with get_session() as session:
         company_state = session.query(Company).filter_by(id=id).first()
 
@@ -91,6 +113,17 @@ def delete_company(id: str) -> ResponseSchema:
             )
 
         session.delete(company_state)
+        session.commit()
+
+        logger_data = {
+            "id": uuid.uuid4(),
+            "table": "company",
+            "action": "insert",
+            "object_info": CompanySchema.from_orm(company_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
         session.commit()
 
         return ResponseSchema(

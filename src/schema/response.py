@@ -15,7 +15,7 @@ class ResponseSchema(BaseModel):
         if isinstance(data, dict):
             result = {}
             for key, value in data.items():
-                if isinstance(value, (dict, list)):
+                if isinstance(value, (dict, list)) and not []:
                     values = cls.remove_skip_values(value)
                     if any(values):
                         result.update({key: values})
@@ -24,7 +24,7 @@ class ResponseSchema(BaseModel):
         else:
             result = []
             for value in data:
-                if isinstance(value, (dict, list)):
+                if isinstance(value, (dict, list)) and not []:
                     values = cls.remove_skip_values(value)
                     if any(values):
                         result.append(values)

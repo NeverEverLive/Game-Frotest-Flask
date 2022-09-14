@@ -13,8 +13,6 @@ from src.schema.response import ResponseSchema
 def create_article(article: ArticleSchema) -> ResponseSchema:
     article_state = Article().fill(**article.dict())
 
-    logging.warning(ArticleSchema.from_orm(article_state))
-
     with get_session() as session:
         session.add(article_state)
         session.commit()
