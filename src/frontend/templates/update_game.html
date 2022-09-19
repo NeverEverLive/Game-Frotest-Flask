@@ -21,60 +21,52 @@
     <select class="form-control mb-3 w-50" name="selectGenre" aria-label="Select genre">
       {% if current_genre %}
         <option selected>{{current_genre.title}}</option>
-      {% else %}
-        <option selected>Select Genre</option>
       {% endif %}
+      <option value="">Select Genre</option>
       {% for genre in genries%}
         {% if genre.title != current_genre.title %}
           <option value="{{genre.title}}">{{genre.title}}</option>
         {% endif %}
       {% endfor %}
-      <option value="">---------</option>
     </select>
 
     <label for="exampleInputTitle">Select developer</label>
     <select class="form-control mb-3 w-50" name="selectDeveloper" aria-label="Select developer">
       {% if current_developer %}
         <option selected>{{current_developer.name}}</option>
-      {% else %}
-        <option selected>Select developer</option>
       {% endif %}
+      <option value="">Select developer</option>
       {% for company in companies%}
         {% if company.name != current_developer.name %}
           <option value="{{company.name}}">{{company.name}}</option>
         {% endif %}
       {% endfor %}
-      <option value="">---------</option>
     </select>
 
     <label for="exampleInputTitle">Select publisher</label>
     <select class="form-control mb-3 w-50" name="selectPublisher" aria-label="Select publisher">
       {% if current_publisher %}
         <option selected>{{current_publisher.name}}</option>
-      {% else %}
-        <option selected>Select publisher</option>
       {% endif %}
+      <option value="">Select publisher</option>
       {% for company in companies%}
         {% if company.name != current_publisher.name %}
           <option value="{{company.name}}">{{company.name}}</option>
         {% endif %}
       {% endfor %}
-      <option value="">---------</option>
     </select>
 
     <label for="exampleInputTitle">Select sponsor</label>
     <select class="form-control mb-3 w-50" name="selectSponsor" aria-label="Select sponsor">
       {% if current_sponsor %}
         <option selected>{{current_sponsor.name}}</option>
-      {% else %}
-        <option selected>Select sponsor</option>
       {% endif %}
+      <option value="">Select sponsor</option>
       {% for company in companies%}
         {% if company.name != current_sponsor.name %}
           <option value="{{company.name}}">{{company.name}}</option>
         {% endif %}
       {% endfor %}
-      <option value="">---------</option>
     </select>
     
     <label for="exampleInputImage">Image</label>

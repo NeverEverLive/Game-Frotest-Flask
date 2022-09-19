@@ -1,8 +1,12 @@
 
 
 import logging
+from uuid import uuid4
 from src.operators.image import upload
+from src.operators.article import delete_article
 from src.models.genre import Genre
+from src.models.article import Article
+from src.models.logger import Logger
 from src.schema.company import CompanySchema
 from src.schema.genre import GenreSchema
 from src.models.base_model import get_session
@@ -10,7 +14,7 @@ from src.models.game import Game
 from src.models.developer import Developer
 from src.models.publisher import Publisher
 from src.models.sponsor import Sponsor
-from src.schema.game import GameSchema, GamesSchema, GetGameSchema, GameCompanyRelationSchema
+from src.schema.game import GameSchema, GamesSchema, GameCompanyRelationSchema
 from src.schema.accomplices import AccomplicesSchema
 from src.schema.response import ResponseSchema
 
@@ -23,7 +27,16 @@ def _create_developer(game, developer):
         session.add(developer_state)
         session.commit()
 
-        return developer_state
+        logger_data = {
+            "id": uuid4(),
+            "table": "developer",
+            "action": "delete",
+            "object_info": AccomplicesSchema.from_orm(developer).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
 
 
 def _create_publisher(game, publisher):
@@ -34,7 +47,16 @@ def _create_publisher(game, publisher):
         session.add(publisher_state)
         session.commit()
 
-        return publisher_state
+        logger_data = {
+            "id": uuid4(),
+            "table": "publisher",
+            "action": "delete",
+            "object_info": AccomplicesSchema.from_orm(publisher).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
 
 
 def _create_sponsor(game, sponsor):
@@ -43,6 +65,17 @@ def _create_sponsor(game, sponsor):
 
     with get_session() as session:
         session.add(sponsor_state)
+        session.commit()
+
+        logger_data = {
+            "id": uuid4(),
+            "table": "sponsor",
+            "action": "delete",
+            "object_info": AccomplicesSchema.from_orm(sponsor).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
         session.commit()
 
 
@@ -55,20 +88,81 @@ def _create_accomplices(data):
         _create_sponsor(data.game, data.publisher)
 
 
+def _delete_accompilices(developer_state, publisher_state, sponsor_state, session):
+    if developer_state:
+        for developer in developer_state:
+            logger_data = {
+                "id": uuid4(),
+                "table": "developer",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(developer).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+            session.delete(developer)
+            session.commit()
+
+    if publisher_state:
+        for publisher in publisher_state:
+            logger_data = {
+                "id": uuid4(),
+                "table": "publisher",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(publisher).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+            session.delete(publisher)
+            session.commit()
+
+    if sponsor_state:
+        for sponsor in sponsor_state:
+            logger_data = {
+                "id": uuid4(),
+                "table": "sponsor",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(sponsor).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+            session.delete(sponsor)
+            session.commit()
+
+
 def create_game(data: GameCompanyRelationSchema) -> ResponseSchema:
     game_state = Game().fill(**data.game.dict())
-    
-    _create_accomplices(data)
-    
+
     with get_session() as session:
         session.add(game_state)
         session.commit()
-        
-        return ResponseSchema(
-            data=GameCompanyRelationSchema.from_orm(data),
-            message="Game created successfuly",
-            success=True
-        )
+
+        logger_data = {
+            "id": uuid4(),
+            "table": "game",
+            "action": "delete",
+            "object_info": GameSchema.from_orm(game_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
+
+    _create_accomplices(data)
+
+    return ResponseSchema(
+        data=GameCompanyRelationSchema.from_orm(data),
+        message="Game created successfuly",
+        success=True
+    )
 
 
 def get_game(id: str) -> ResponseSchema:
@@ -122,6 +216,18 @@ def update_game(game: GameSchema, developer: CompanySchema, publisher: CompanySc
 
     with get_session() as session:
         game_state = session.query(Game).filter_by(id=game.id).first()
+
+        logger_data = {
+            "id": uuid4(),
+            "table": "game",
+            "action": "update",
+            "object_info": GameSchema.from_orm(game_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
+
         developer_state = session.query(Developer).filter_by(game_id=game.id).first()
         publisher_state = session.query(Publisher).filter_by(game_id=game.id).first()
         sponsor_state = session.query(Sponsor).filter_by(game_id=game.id).first()
@@ -150,15 +256,29 @@ def update_game(game: GameSchema, developer: CompanySchema, publisher: CompanySc
         logging.warning(publisher)
         logging.warning(sponsor)
 
+        logging.warning(developer.id)
+        logging.warning(developer_state.company_id)
+        logging.warning(bool(developer))
+        logging.warning(bool(developer_state))
+        logging.warning(bool(str(developer.id) != str(developer_state.company_id)))
+
         if not developer and developer_state:
             session.delete(developer_state)
             logging.warning(developer_state)
             session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "developer",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(developer_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
         
-        if developer:
-            if developer_state:
-                session.delete(developer_state)
-                session.commit()
+        elif developer and not developer_state:
             developer_state = Developer().fill(
                 company_id=developer.id, 
                 game_id=game.id,
@@ -166,16 +286,69 @@ def update_game(game: GameSchema, developer: CompanySchema, publisher: CompanySc
             session.add(developer_state)
             logging.warning(developer_state)
             session.commit()
-        
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "developer",
+                "action": "delete",
+                "object_info": AccomplicesSchema.from_orm(developer_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+        elif developer and developer_state and str(developer.id) != str(developer_state.company_id):
+            session.delete(developer_state)
+            session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "developer",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(developer_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+            
+            developer_state = Developer().fill(
+                company_id=developer.id, 
+                game_id=game.id,
+                )
+            session.add(developer_state)
+            logging.warning(developer_state)
+            session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "developer",
+                "action": "delete",
+                "object_info": AccomplicesSchema.from_orm(developer_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
         if not publisher and publisher_state:
             session.delete(publisher_state)
             logging.warning(publisher_state)
             session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "publisher",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(developer_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
         
-        if publisher:
-            if publisher_state:
-                session.delete(publisher_state)
-                session.commit()
+        elif publisher and not publisher_state:
             publisher_state = Publisher().fill(
                 company_id=publisher.id, 
                 game_id=game.id,
@@ -183,16 +356,69 @@ def update_game(game: GameSchema, developer: CompanySchema, publisher: CompanySc
             session.add(publisher_state)
             logging.warning(publisher_state)
             session.commit()
-        
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "publisher",
+                "action": "delete",
+                "object_info": AccomplicesSchema.from_orm(publisher_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+        elif publisher and publisher_state and str(publisher.id) != str(publisher_state.company_id):
+            session.delete(publisher_state)
+            session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "publisher",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(publisher_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+            
+            publisher_state = Publisher().fill(
+                company_id=publisher.id, 
+                game_id=game.id,
+                )
+            session.add(publisher_state)
+            logging.warning(publisher_state)
+            session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "publisher",
+                "action": "delete",
+                "object_info": AccomplicesSchema.from_orm(publisher_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
         if not sponsor and sponsor_state:
             session.delete(sponsor_state)
             logging.warning(sponsor_state)
             session.commit()
 
-        if sponsor:
-            if sponsor_state:
-                session.delete(sponsor_state)
-                session.commit()
+            logger_data = {
+                "id": uuid4(),
+                "table": "sponsor",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(developer_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+        elif sponsor and not sponsor_state:
             sponsor_state = Sponsor().fill(
                 company_id=sponsor.id, 
                 game_id=game.id,
@@ -200,7 +426,52 @@ def update_game(game: GameSchema, developer: CompanySchema, publisher: CompanySc
             session.add(sponsor_state)
             logging.warning(sponsor_state)
             session.commit()
-    
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "sponsor",
+                "action": "delete",
+                "object_info": AccomplicesSchema.from_orm(sponsor_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+
+        elif sponsor and sponsor_state and str(sponsor.id) != str(sponsor_state.company_id):
+            session.delete(sponsor_state)
+            session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "sponsor",
+                "action": "insert",
+                "object_info": AccomplicesSchema.from_orm(sponsor_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()
+            
+            sponsor_state = Sponsor().fill(
+                company_id=sponsor.id, 
+                game_id=game.id,
+                )
+            session.add(sponsor_state)
+            logging.warning(sponsor_state)
+            session.commit()
+
+            logger_data = {
+                "id": uuid4(),
+                "table": "sponsor",
+                "action": "delete",
+                "object_info": AccomplicesSchema.from_orm(sponsor_state).dict()
+            }
+
+            logger_state = Logger().fill(**logger_data)
+            session.add(logger_state)
+            session.commit()    
+
     session.commit()
             
 
@@ -213,13 +484,39 @@ def update_game(game: GameSchema, developer: CompanySchema, publisher: CompanySc
 def delete_game(id: str) -> ResponseSchema:
 
     with get_session() as session:
+        article_state = session.query(Article).filter_by(game_id=id).all()
+        logging.warning(article_state)
+
+        developer_state = session.query(Developer).filter_by(game_id=id).all()
+        logging.warning(developer_state)
+        publisher_state = session.query(Publisher).filter_by(game_id=id).all()
+        logging.warning(publisher_state)
+        sponsor_state = session.query(Sponsor).filter_by(game_id=id).all()
+        logging.warning(sponsor_state)
+        
+        for article in article_state:
+            delete_article(article)
+        
+        _delete_accompilices(developer_state, publisher_state, sponsor_state, session)
+
         game_state = session.query(Game).filter_by(id=id).first()
 
         if not game_state:
             return ResponseSchema(
                 success=False,
-                message="Same genre doesn't exist"
+                message="Same game doesn't exist"
             )
+
+        logger_data = {
+            "id": uuid4(),
+            "table": "game",
+            "action": "insert",
+            "object_info": GameSchema.from_orm(game_state).dict()
+        }
+
+        logger_state = Logger().fill(**logger_data)
+        session.add(logger_state)
+        session.commit()
 
         session.delete(game_state)
         session.commit()

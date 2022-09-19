@@ -1,7 +1,7 @@
 from typing import Optional
 import uuid
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class AccomplicesSchema(BaseModel):
@@ -11,6 +11,11 @@ class AccomplicesSchema(BaseModel):
 
     def __hash__(self):
         return hash((self.id, self.company_id, self.game_id))
+
+    @validator("id", "company_id", "game_id")
+    def uuid_to_str(cls, value: uuid.UUID):
+        if isinstance(value, uuid.UUID):
+            return str(value)
 
     class Config:
         orm_mode = True

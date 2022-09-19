@@ -20,7 +20,7 @@ class Developer(BaseModel):
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=datetime.now)
 
     company = relationship('Company', back_populates='developer', uselist=False)
-    game = relationship('Game', back_populates='developer', uselist=True, cascade="all, delete")
+    game = relationship('Game', back_populates='developer', uselist=True)
 
     __table_args__ = (
         PrimaryKeyConstraint(id),

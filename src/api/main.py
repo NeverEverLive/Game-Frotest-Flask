@@ -2,6 +2,7 @@ from base64 import b64encode
 import datetime
 import logging
 from flask import render_template, Blueprint, request
+from src.operators.logger import apply
 from src.schema.article import ArticleSchema
 from src.schema.company import CompanySchema
 from src.operators.accompile import create_accompile
@@ -105,7 +106,7 @@ def edit_page():
 
 
 @main.route("/edit_game")
-def edit_game_page(success=False, success_update=False, success_delete=False):
+def edit_game_page(success=False, success_update=False, success_delete=False, seccess_backroll=False):
     
     data = []
     companies = get_all_companies().data
@@ -148,6 +149,7 @@ def edit_game_page(success=False, success_update=False, success_delete=False):
         success=success,
         success_update=success_update,
         success_delete=success_delete,
+        seccess_backroll=seccess_backroll,
         current_user=current_user,
         companies=companies,
         genries=genries
@@ -236,7 +238,6 @@ def submit_update():
 
     return edit_game_page(
         success_update=True,
-        current_user=current_user,
         )
 
 @main.get("/delete_game/<string:id>")
@@ -244,8 +245,7 @@ def delete_game_edpoint(id):
     delete_game(id)
 
     return edit_game_page(
-        success_delete=True,
-        current_user=current_user,
+        success_delete=True
         )
     
 
@@ -308,9 +308,7 @@ def create_game_edpoint():
     create_game(data)
 
     return edit_game_page(
-        success=True,
-        current_user=current_user,
-
+        success=True
         )
 
 
@@ -344,7 +342,6 @@ def create_company_endpoint():
 
     return edit_companies_page(
         success=True,
-        current_user=current_user,
         )
 
 
@@ -380,8 +377,7 @@ def submit_update_company():
     update_company(company)
 
     return edit_companies_page(
-        success_update=True,
-        current_user=current_user,
+        success_update=True
 
         )
 
@@ -392,7 +388,6 @@ def delete_company_edpoint(id):
 
     return edit_companies_page(
         success_delete=True,
-        current_user=current_user,
         )
 
 
@@ -539,3 +534,16 @@ def logout_user_edpoint():
     current_user = None
 
     return home(authorization_message="You successfully logged out")
+
+
+@main.post("/backroll")
+def backroll():
+    request_form = request.form
+
+    logging.warning(request_form)
+
+    limit = request_form["InputCount"]
+
+    apply(limit)
+
+    return edit_game_page(seccess_backroll=True)

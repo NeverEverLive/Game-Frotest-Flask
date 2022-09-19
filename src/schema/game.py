@@ -30,6 +30,11 @@ class GameSchema(BaseModel):
             value = datetime.datetime.strptime(value, '%d-%m-%Y')
         return str(value)
 
+    @validator("id", "image_id", "genre_id")
+    def uuid_to_str(cls, value: uuid.UUID):
+        if isinstance(value, uuid.UUID):
+            return str(value)
+
     class Config:
         orm_mode = True
     
