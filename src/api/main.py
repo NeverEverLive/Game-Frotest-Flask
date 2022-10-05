@@ -1,24 +1,30 @@
 from base64 import b64encode
 import datetime
 import logging
+import uuid 
+
 from flask import render_template, Blueprint, request
-from src.operators.logger import apply
-from src.schema.article import ArticleSchema
-from src.schema.company import CompanySchema
-from src.operators.accompile import create_accompile
+
+
+
 from src.models.developer import Developer
 from src.models.publisher import Publisher
 from src.models.sponsor import Sponsor
-
+from src.models.user import RoleEnum
 from src.api.utils import authorization
+from src.operators.logger import apply
 from src.operators.image import get_image, upload
+from src.operators.accompile import create_accompile
 from src.operators.company import create_company, delete_company, get_all_companies, get_company, get_company_by_name, update_company
-from src.operators.genre import get_all_genries, get_genre, get_genre_by_title
-from src.operators.user import create_user, get_user, login_user
+from src.operators.genre import get_all_genries, get_genre, get_genre_by_title, create_genre, update_genre, delete_genre
+from src.operators.user import create_user, get_user, login, get_all_users, update_user, delete_user
 from src.operators.game import create_game, delete_game, get_all_game, get_game, update_game
 from src.operators.article import create_article, get_all_article, get_article
 from src.schema.game import GameCompanyRelationSchema, GameSchema
-
+from src.schema.genre import GenreSchema
+from src.schema.user import UserSchema, LoginUserSchema
+from src.schema.article import ArticleSchema
+from src.schema.company import CompanySchema
 
 main = Blueprint("main", __name__)
 
@@ -109,8 +115,15 @@ def edit_page():
 def edit_game_page(success=False, success_update=False, success_delete=False, seccess_backroll=False):
     
     data = []
-    companies = get_all_companies().data
-    genries = get_all_genries().data
+    try:
+        companies = get_all_companies().data
+    except:
+        companies = []
+    
+    try:
+        genries = get_all_genries().data
+    except:
+        genries = []
 
     try:
         games = get_all_game().data
@@ -314,7 +327,10 @@ def create_game_edpoint():
 
 @main.route("/edit_company")
 def edit_companies_page(success=False, success_update=False, success_delete=False):
-    companies = get_all_companies().data
+    try:
+        companies = get_all_companies().data
+    except:
+        companies = []
         
     return render_template(
         "edit_company.html",
@@ -415,55 +431,6 @@ def create_article_endpoint():
     return home()
 
 
-# @main.route("/update_company/<string:id>")
-# def update_company_endpoint(id):
-
-#     company_info = get_company(id).data
-
-#     current_company_title = company_info.name
-#     current_company_description = company_info.description
-
-#     logging.warning("1")
-
-#     return render_template(
-#         "update_company.html",
-#         company=company_info,
-#         current_title=current_company_title,
-#         current_user=current_user,
-#         current_description=current_company_description
-#     )
-
-
-# @main.post("/submit_company")
-# def submit_update_company():
-
-#     request_form = request.form
-
-#     company = get_company(request_form["companyId"]).data
-
-#     company.name = request_form["inputTitle"]
-#     company.description = request_form["inputDescription"]
-
-#     update_company(company)
-
-#     return edit_companies_page(
-#         success_update=True,
-#         current_user=current_user,
-
-#         )
-
-
-# @main.get("/delete_company/<string:id>")
-# def delete_company_edpoint(id):
-#     delete_company(id)
-
-#     return edit_companies_page(
-#         success_delete=True,
-#         current_user=current_user,
-#         )
-
-
-
 @main.get("/login")
 def get_login_request_edpoint(error_message=None):
     
@@ -488,7 +455,9 @@ def login_user_edpoint():
 
     global current_user
     try:
-        current_user = login_user(data)["user"]
+        user = LoginUserSchema.parse_obj(data)
+        logging.warning(user)
+        current_user = login(user).data
     except ValueError as error:
         return get_login_request_edpoint(str(error))
 
@@ -515,12 +484,14 @@ def register_user_edpoint():
 
     data = {
         "username": request_form["inputUsername"],
-        "password": request_form["inputPassword"]
+        "password": request_form["inputPassword"],
+        "role": RoleEnum.user
     }
 
     global current_user
-    
-    current_user = create_user(data)["user"]["username"]
+    user = UserSchema.parse_obj(data)
+    logging.warning(user)
+    current_user = create_user(user).data
 
     logging.warning(current_user)
         
@@ -547,3 +518,177 @@ def backroll():
     apply(limit)
 
     return edit_game_page(seccess_backroll=True)
+
+
+
+@main.get('/edit_genre')
+def genre_edit_page(
+        success=False,
+        success_update=False,
+        success_backroll=False,
+        success_delete=False
+    ):
+    try:
+        genries = get_all_genries().data
+    except:
+        genries = []
+
+    logging.warning(genries)
+
+    return render_template(
+        "edit_genre.html",
+        genries=genries,
+        current_user=current_user,
+        success=success,
+        success_update=success_update,
+        success_backroll=success_backroll,
+        success_delete=success_delete
+    )
+
+
+
+@main.post("/create_genre")
+def create_genre_endpoint():
+    request_form = request.form
+    genre_title = request_form["inputTitle"]
+    genre_description = request_form["inputDescription"]
+
+    genre = GenreSchema(
+        title=genre_title,
+        description=genre_description,
+    )
+
+    create_genre(genre)
+
+    return genre_edit_page(success=True)
+
+
+@main.get("/update_genre/<string:id>")
+def update_genre_endpoint(id):
+    genre = get_genre(id).data
+
+    return render_template(
+        "update_genre.html",
+        genre=genre,
+    )
+
+
+@main.post("/submit_genre")
+def submit_genre_update():
+    request_form = request.form
+
+    genre_id = request_form["genreId"]
+    genre_title = request_form["inputTitle"]
+    genre_description = request_form["inputDescription"]
+
+    genre = GenreSchema(
+        id=uuid.UUID(genre_id),
+        title=genre_title,
+        description=genre_description
+    )
+
+    update_genre(genre)
+
+    return genre_edit_page(
+        success_update=True,
+    )
+
+
+@main.get("/delete_genre/<string:id>")
+def delete_genre_endpoint(id):
+    logging.warning(id)
+    delete_genre(id)
+    return genre_edit_page(
+        success_delete=True,
+    )
+
+
+@main.get("/edit_user")
+def user_edit_page(
+        success=False,
+        success_update=False,
+        success_backroll=False,
+        success_delete=False
+):
+    try:
+        users = get_all_users().data
+    except:
+        users = []
+
+    return render_template(
+        "edit_user.html",
+        current_user=current_user,
+        users=users,
+        roles=RoleEnum,
+        success=success,
+        success_update=success_update,
+        success_backroll=success_backroll,
+        success_delete=success_delete,
+    )
+
+
+@main.post("/create_user")
+def create_user_endpoint():
+    request_form = request.form
+    user_username = request_form["inputUserName"]
+    user_password = request_form["inputPassword"]
+    user_role = request_form["selectRole"]
+
+    user = UserSchema(
+        username=user_username,
+        hash_password=user_password,
+        role=user_role,
+    )
+
+    create_user(user)
+
+    return user_edit_page(success=True)
+
+
+@main.get("/update_user/<string:id>")
+def update_user_endpoint(id):
+    user = get_user(id).data
+    current_role = user["role"]
+
+    logging.warning(current_role)
+
+    return render_template(
+        "update_user.html",
+        user=user,
+        current_role=current_role,
+        roles=RoleEnum
+    )
+
+
+@main.post("/submit_user")
+def submit_user_update():
+    request_form = request.form
+
+    user_id = request_form["userId"]
+    user_username = request_form["inputUserName"]
+    user_password = request_form["inputPassword"]
+    user_role = request_form["selectRole"]
+
+    logging.warning("asdasdasd")
+    logging.warning(user_role)
+
+    user = UserSchema(
+        id=user_id,
+        username=user_username,
+        hash_password=user_password,
+        role=user_role,
+    )
+
+    update_user(user)
+
+    return user_edit_page(
+        success_update=True,
+    )
+
+
+@main.get("/delete_user/<string:id>")
+def delete_user_endpoint(id):
+    delete_user(id)
+    return user_edit_page(
+        success_delete=True,
+    )

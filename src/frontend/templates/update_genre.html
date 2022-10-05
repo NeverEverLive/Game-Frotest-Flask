@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+{% block content %}
+  <h1 class="mt-4 mb-4">Update {{genre.title}} genre</h1>
+  <button type="button" class="btn btn-primary" style="position:absolute; right: 325px;"
+        onclick="window.location.href='/edit_genre'">Back</button>
+        
+  <form method="POST" action="/submit_genre", enctype="multipart/form-data">
+    <label for="exampleGenreId">Genre id</label>
+    <input type="text" name ="genreId" class="form-control mb-3 w-50" id="examplegenreId" value="{{genre.id}}" readonly>
+
+    <label for="exampleInputTitle">Genre title</label>
+    <input type="text" name ="inputTitle" class="form-control mb-3 w-50" id="exampleInputTitle" placeholder="Enter title" value="{{genre.title}}">
+
+    <label for="exampleInputDescription">Description</label>
+    <textarea name ="inputDescription" class="form-control mb-3 w-50" id="exampleFormControlTextarea1" rows="3" placeholder="Enter description">{{genre.description}}</textarea>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+  </form>
+  
+{% endblock %}

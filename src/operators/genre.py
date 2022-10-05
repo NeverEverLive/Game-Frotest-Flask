@@ -104,10 +104,10 @@ def update_genre(genre: GenreSchema) -> ResponseSchema:
         )
 
 
-def delete_genre(genre: GetGenreSchema) -> ResponseSchema:
+def delete_genre(id: str) -> ResponseSchema:
 
     with get_session() as session:
-        genre_state = session.query(Genre).filter_by(id=genre.id).first()
+        genre_state = session.query(Genre).filter_by(id=id).first()
 
         if not genre_state:
             return ResponseSchema(

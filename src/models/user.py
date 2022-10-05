@@ -1,14 +1,15 @@
 from datetime import datetime
 from uuid import uuid4
 import enum
+import logging
 
-from sqlalchemy import Column, func, PrimaryKeyConstraint, Enum
+from sqlalchemy import Column, func, PrimaryKeyConstraint, Enum, DDL, event, insert
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.types import String, DateTime
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
-from src.models.base_model import BaseModel
+from src.models.base_model import BaseModel, get_session
 
 
 class RoleEnum(enum.Enum):
@@ -56,3 +57,13 @@ class CreateUpdateUserSchema(Schema):
     id = fields.UUID()
     username = fields.String()
     hash_password = fields.String()
+    role = fields.String(validate=validate.OneOf(["Editor", "User", "Manager"]))
+
+
+
+
+
+# event.listen(
+#     User.__table__, 'after_create',
+#     create_admin()
+# )
