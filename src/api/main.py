@@ -141,7 +141,9 @@ def edit_game_page(success=False, success_update=False, success_delete=False, se
 
         publisher_company = None
         sponsor_company = None
-        developer_company = get_company(developer.company_id).data
+        developer_company = None
+        if developer:
+            developer_company = get_company(developer.company_id).data
         if publisher:
             publisher_company = get_company(publisher.company_id).data
         if sponsor:
