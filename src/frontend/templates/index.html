@@ -19,23 +19,23 @@
         {% if current_user %}
           <li class="nav-item">
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                  <button onclick="window.location.href='/user/logout'" style="position:absolute; right: 150px" type="button" class="btn btn-danger mx-4">Log out</button>
+                  <button onclick="window.location.href='/user/logout'" style="position:absolute; right: 150px; top: 10px;" type="button" class="btn btn-danger mx-4">Log out</button>
               </div>
           </li>
           <li class="nav-item">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-1">
-                <p style="position:absolute; right: 60px">User: {{current_user.username}}</p>
+                <p style="position:absolute; right: 30px; top: 15px;">User: {{current_user.username}}</p>
             </div>
           </li>
         {% else %}
           <li class="nav-item">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button onclick="window.location.href='/login'" style="position:absolute; right: 150px;" type="button" class="btn btn-primary mx-4">Login</button>
+                <button onclick="window.location.href='/login'" style="position:absolute; right: 150px; top: 10px;" type="button" class="btn btn-primary mr-4">Login</button>
             </div>
           </li>
           <li class="nav-item">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button onclick="window.location.href='/register'" style="position:absolute; right: 0px" type="button" class="btn btn-primary mx-4">Create account</button>
+                <button onclick="window.location.href='/register'" style="position:absolute; right: 0px; top: 10px;" type="button" class="btn btn-primary mx-4">Create account</button>
             </div>
           </li>
         {% endif %}
@@ -72,7 +72,11 @@
               <li class="list-group-item">
                   <b>{{i.title}}</b>
                   <span>{{ i.date }}</span>
-                  <span>{{ i.description|safe|truncate(25) }}<a href="/detail/{{i.id}}">more</a></span>
+                  {% if current_user %}
+                    <span>{{ i.description|safe|truncate(25) }}<a href="/detail/{{i.id}}">more</a></span>
+                  {% else %}
+                    <span><a href="/login">Log in for details</a></span>
+                  {% endif %}
               </li>
           </ul>  
         {% endfor %}
@@ -87,7 +91,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Create game</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Create article</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

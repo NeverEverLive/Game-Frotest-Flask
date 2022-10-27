@@ -66,7 +66,7 @@ def detail(id):
     game_id = article.game_id
     
     user_id = article.user_id
-    user = get_user(user_id)["user"]
+    user = get_user(user_id).data
     
     game_info = get_game(game_id)
     game = game_info.data.game
@@ -425,7 +425,7 @@ def create_article_endpoint():
         date=article_date,
         is_published=article_published,
         game_id=game_id,
-        user_id=current_user["id"]
+        user_id=current_user.id
     )
     
     create_article(article)
@@ -571,6 +571,7 @@ def update_genre_endpoint(id):
 
     return render_template(
         "update_genre.html",
+        current_user=current_user,
         genre=genre,
     )
 
@@ -656,6 +657,7 @@ def update_user_endpoint(id):
 
     return render_template(
         "update_user.html",
+        current_user=current_user,
         user=user,
         current_role=current_role,
         roles=RoleEnum
