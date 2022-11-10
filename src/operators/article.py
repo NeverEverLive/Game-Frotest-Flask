@@ -63,7 +63,7 @@ def get_all_article() -> ResponseSchema:
         )
 
 
-def update_article(article: GetArticleSchema) -> ResponseSchema:
+def update_article(article: ArticleSchema) -> ResponseSchema:
     with get_session() as session:
         logging.warning(session.query(Article).filter_by(id=article.id).first().title)
         logger_data = {
@@ -89,9 +89,9 @@ def update_article(article: GetArticleSchema) -> ResponseSchema:
             )
 
 
-def delete_article(article: GetArticleSchema) -> ResponseSchema:
+def delete_article(article: str) -> ResponseSchema:
     with get_session() as session:
-        article_state = session.query(Article).filter_by(id=article.id).first()
+        article_state = session.query(Article).filter_by(id=article).first()
 
         if not article_state:
             return ResponseSchema(

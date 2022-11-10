@@ -1,6 +1,14 @@
 {% extends 'index.html' %}
 {% block content %}
     <button type="button" class="btn btn-primary" onclick="location.href='/'">Back</button>
+    {% if current_user.role.value == 'Editor' %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="position:absolute; right: 350px;">
+            Edit article
+        </button>
+        <button type="button" class="btn btn-danger" onclick="location.href='/delete_article/{{article.id}}'", style="position:absolute; right: 200px;">
+            Delete Article
+        </button>
+    {% endif %}
     <h1>{{ article.title }}</h1>
     <p>Game: {{ game.title }}</p>
     <br>
@@ -14,4 +22,51 @@
 
     <p>Description: {{ article.description }}</p>
     <p>Article created by: {{ user["username"] }}</p>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Create article</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/submit_article", enctype="multipart/form-data">
+      
+                    <label for="exampleInputTitle">Article id</label>
+                    <input type="text" name ="ArticleId" class="form-control mb-3 w-100" id="exampleArticleId" value="{{article.id}}" readonly>
+
+                  <label for="exampleInputTitle">Article title</label>
+                  <input type="text" name ="inputTitle" class="form-control mb-3" id="exampleInputTitle" value="{{article.title}}" required>
+      
+                  <label for="exampleInputDescription">Description</label>
+                  <textarea name ="inputDescription" class="form-control mb-3" id="exampleFormControlTextarea1" rows="3">{{article.description}}</textarea>
+      
+                  <label for="exampleInputDate">Date</label>
+                  <input type="date" name ="inputDate" class="form-control mb-3" id="exampleInputDate" value={{article.date}}>
+                  
+                  <input type="checkbox" name ="inputIsPublished" class="mb-3" id="exampleIsPublished" {% if article.is_published %} checked {% endif %}>
+                  <label for="exampleIsPublished">Is published?</label>
+                  <br>
+      
+                  <label for="exampleSelectGame">Select game</label>
+                  <select required class="form-control mb-3" name="selectGame" aria-label="Select game">
+                    <option selected value="{{game.id}}">{{game.title}}</option>
+                    {% for select_game in games%}
+                        {% if select_game.title != game.title%}
+                            <option value="{{select_game.id}}">{{select_game.title}}</option>
+                        {% endif %}
+                    {% endfor %}
+                  </select>
+      
+                  <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                </form>
+            </div>
+      
+          </div>
+        </div>
+    </div>
+      
 {% endblock %}

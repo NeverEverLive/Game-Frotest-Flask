@@ -1,4 +1,5 @@
 from base64 import b64encode
+import os
 import datetime
 import logging
 import uuid 
@@ -19,7 +20,7 @@ from src.operators.company import create_company, delete_company, get_all_compan
 from src.operators.genre import get_all_genries, get_genre, get_genre_by_title, create_genre, update_genre, delete_genre
 from src.operators.user import create_user, get_user, login, get_all_users, update_user, delete_user
 from src.operators.game import create_game, delete_game, get_all_game, get_game, update_game
-from src.operators.article import create_article, get_all_article, get_article
+from src.operators.article import create_article, get_all_article, get_article, update_article, delete_article
 from src.schema.game import GameCompanyRelationSchema, GameSchema
 from src.schema.genre import GenreSchema
 from src.schema.user import UserSchema, LoginUserSchema
@@ -68,6 +69,8 @@ def detail(id):
     user_id = article.user_id
     user = get_user(user_id).data
     
+    games = get_all_game().data
+
     game_info = get_game(game_id)
     game = game_info.data.game
 
@@ -93,6 +96,7 @@ def detail(id):
         # token=token,
         article=article,
         game=game,
+        games=games,
         developer=developer_company,
         sponsor=sponsor_company,
         publisher=publisher_company,
@@ -696,3 +700,51 @@ def delete_user_endpoint(id):
     return user_edit_page(
         success_delete=True,
     )
+
+
+
+
+
+
+@main.post("/submit_article")
+def submit_update_article():
+
+    request_form = request.form
+
+    logging.warning(request_form)
+
+    article_id = request_form["ArticleId"]
+    article = get_article(article_id).data
+
+    article_title = request_form["inputTitle"]
+    article_description = request_form["inputDescription"]
+    article_date = request_form["inputDate"]
+    
+    article.title = article_title
+    article.description = article_description
+    article.date = article_date
+
+    game = request_form["selectGame"]
+    
+    article.game_id = game
+    logging.warning(article)
+    update_article(article)
+    return detail(article.id)
+
+
+@main.get("/delete_article/<string:id>")
+def _delete_article(id):
+    delete_article(id)
+    return home()
+
+
+@main.get("/dump")
+def dump():
+    os.system('pg_dump game_forum_db > dump.sql')
+    return edit_page()
+
+
+@main.get("/load_dump")
+def load_dump():
+    os.system('psql game_forum_db < dump.sql')
+    return edit_page()
